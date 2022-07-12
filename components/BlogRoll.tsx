@@ -2,17 +2,22 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+// const htmlToText = (html) => {
+//   const getNodes = function* (doc, filter) {
+//     const iter = doc.createNodeIterator(doc, filter);
+//     let node;
+//     while ((node = iter.nextNode()) !== null) {
+//       yield node;
+//     }
+//   };
+
+//   const doc = new DOMParser().parseFromString(html, "text/html");
+//   return Array.from(
+//     getNodes(doc, NodeFilter.SHOW_TEXT),
+//     (x) => x.nodeValue
+//   ).join("");
+// };
 export default function BlogRoll({ blogs }) {
-  // const excerpt = (content) => {
-  //   const p = (
-  //     <p
-  //       dangerouslySetInnerHTML={{
-  //         __html: content,
-  //       }}
-  //     />
-  //   );
-  //   return p.textContent;
-  // };
   return (
     <div className="columns is-multiline">
       {blogs &&
@@ -26,8 +31,8 @@ export default function BlogRoll({ blogs }) {
             >
               <header>
                 {blog.eyecatch ? (
-                  <div className="featured-thumbnail">
-                    <div className="rounded-2xl w-[120px]">
+                  <div className="featured-thumbnail h-full">
+                    <div className="first:rounded-sm max-w-[120px] w-full first:overflow-hidden min-w-[40px]">
                       <Image
                         src={blog.eyecatch.url}
                         width={blog.eyecatch.width}
@@ -39,12 +44,12 @@ export default function BlogRoll({ blogs }) {
                 ) : null}
                 <p className="post-meta">
                   <Link href={`/blog/${blog.id}`}>
-                    <a className="title has-text-primary is-size-4">
+                    <a className="title has-text-primary text-sm">
                       {blog.title}
                     </a>
                   </Link>
                   <br />
-                  <span className="subtitle is-size-5 is-block">
+                  <span className="subtitle is-block text-xs">
                     {blog.publishedAt
                       ?.split("T")[0]
                       .split("-")
@@ -58,8 +63,8 @@ export default function BlogRoll({ blogs }) {
                   </span>
                 </p>
               </header>
-              <p>
-                {/* {excerpt(blog.content)} */}
+              <p className="text-xs">
+                {/* {htmlToText(blog.content).substr(0, 150) + "…"} */}
 
                 {blog.content
                   .match(/[^\<\>]+(?=\<[^\<\>]+\>)|[^\<\>]+$/g)

@@ -42,7 +42,7 @@ module.exports = {
         ],
       },
       colors: {
-        primary: "#04ac4d",
+        primary: "#d64000",
         secondary: "#ead808",
         // color: withOpacity("--color-primary"),
       },

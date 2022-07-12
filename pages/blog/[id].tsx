@@ -1,16 +1,36 @@
+import Image from "next/image";
+import Layout from "../../components/Layout";
 import { client } from "../../libs/client";
 
 export default function BlogId({ blog }) {
   return (
-    <main>
-      <h1>{blog.title}</h1>
-      <p>{blog.publishedAt}</p>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: `${blog.content}`,
-        }}
-      />
-    </main>
+    <Layout title={blog.title} description="">
+      <section className="section">
+        <div className="container content">
+          <div className="columns">
+            <div className="column is-10 is-offset-1">
+              <h1>{blog.title}</h1>
+              <p>{blog.publishedAt?.split("T")[0]}</p>
+              <p>
+                {blog.eyecatch?.url && (
+                  <Image
+                    src={blog.eyecatch?.url}
+                    width={blog.eyecatch.width}
+                    height={blog.eyecatch.height}
+                    alt={blog.title}
+                  />
+                )}
+              </p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: `${blog.content}`,
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+    </Layout>
   );
 }
 

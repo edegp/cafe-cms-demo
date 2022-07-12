@@ -1,6 +1,9 @@
-"editor.quickSuggestions": {
-  "strings": true
-},
-"editor.codeActionsOnSave": {
-  "source.fixAll.eslint": true,
-},
+{
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "debug.javascript.usePreview": false
+}

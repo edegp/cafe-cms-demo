@@ -8,18 +8,21 @@ export default function FullWidthImage(props) {
     title,
     subheading,
     imgPosition = "top left",
+    bgAttachment = "unset",
   } = props;
-  console.log(img);
   return (
     <>
       <div
-        className="full-width-image mt-0"
+        className={`${
+          bgAttachment === "fixed"
+            ? "full-width-image"
+            : "full-width-image-container"
+        } mt-0`}
         style={{
-          display: "grid",
           alignItems: "center",
           backgroundImage: `url(${img.src})`,
           backgroundPosition: imgPosition,
-          backgroundAttachment: "fixed",
+          backgroundAttachment: bgAttachment,
         }}
       >
         <div className="flex h-[150px] leading-4 justify-around algin-start flex-col">

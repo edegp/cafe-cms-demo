@@ -1,23 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { client } from "../libs/client";
-import Layout from "../components/Layout";
-import Features from "../components/Features";
-import BlogRoll from "../components/BlogRoll";
-import FullWidthImage from "../components/FullWidthImage";
-import HeroImage from "../public/home-jumbotron.jpg";
-import Coffee from "../public/coffee.png";
-import Gear from "../public/coffee-gear.png";
-import Tutorials from "../public/tutorials.png";
-import Meeting from "../public/meeting-space.png";
+import axios from "axios";
+import { client } from "libs/client";
+import { Rate, Card, Avatar, Typography, Row, Col, Space } from "antd";
+import Layout from "components/Layout";
+import Features from "components/Features";
+import BlogRoll from "components/BlogRoll";
+import FullWidthImage from "components/FullWidthImage";
+import HeroImage from "public/img/home-jumbotron.jpg";
+import Coffee from "public/img/coffee.png";
+import Gear from "public/img/coffee-gear.png";
+import Tutorials from "public/img/tutorials.png";
+import Meeting from "public/img/meeting-space.png";
 
 const title = "良心とともに素晴らしいコーヒーを";
 const subheading = "コーヒーを楽しみながら持続可能な農業をサポート";
 const blurbs = [
   {
     image: Coffee,
-    text: "独立系農家や農家協同組合から直接調達したグリーンコーヒー豆とローストコーヒー豆を販売しています。 環境や地域社会に細心の注意を払って栽培されたさまざまなコーヒー豆を提供できることを誇りに思います。 現在の在庫状況については、投稿を確認するか、直接お問い合わせください。",
+    text: "契約農家や農協から直接調達したグリーンコーヒー豆とローストコーヒー豆を販売しています。 環境や地域社会に細心の注意を払って栽培されたさまざまなコーヒー豆を提供できることを誇りに思います。 現在の在庫状況については、投稿を確認するか、直接お問い合わせください。",
   },
   {
     image: Gear,
@@ -32,10 +33,18 @@ const blurbs = [
     text: "おいしいコーヒーには人々を結びつける力があると私たちは信じています。 そのため、当店の一角を居心地の良いミーティングスペースに変え、コーヒー愛好家の仲間と交流したり、コーヒー作りのテクニックを学んだりすることにしました。 展示されている作品はすべて売りに出されています。 あなたが支払う全額はアーティストに行きます。",
   },
 ];
-const IndexPage = ({ blogs }) => {
+const IndexPage = ({ blogs, result }) => {
   return (
-    <Layout>
-      <FullWidthImage img={HeroImage} title={title} subheading={subheading} />
+    <Layout
+      title="トップページ"
+      description="カルディホームページのトップぺージです"
+    >
+      <FullWidthImage
+        img={HeroImage}
+        title={title}
+        subheading={subheading}
+        bgAttachment="fixed"
+      />
       <section className="section section--gradient">
         <div className="container">
           <div className="section">
@@ -44,22 +53,24 @@ const IndexPage = ({ blogs }) => {
                 <div className="content">
                   <div className="content">
                     <div className="tile">
-                      <h1 className="title">なぜ、カルディなのか</h1>
+                      <h1 className="title text-primary font-black">
+                        なぜ、カルディなのか
+                      </h1>
                     </div>
                     <div className="tile">
                       <h3 className="subtitle">
                         カルディは、おいしいコーヒーだけでなく、社会の役に立っているコーヒーもあるべきだと信じているすべての人のためのコーヒーストアです。
-                        私たちはすべての豆を小規模の持続可能な農家から直接調達し、利益の一部が農家に寄付されるようにします。
+                        私たちはすべての豆を小規模の持続可能な農家から直接調達し、利益の一部が農家に寄付しています。
                       </h3>
                     </div>
                   </div>
                   <div className="columns">
                     <div className="column is-12">
-                      <h3 className="has-text-weight-semibold is-size-2">
+                      <h3 className="has-text-weight-semibold is-size-2 text-primary font-bold">
                         良心とともに素晴らしいコーヒーを
                       </h3>
                       <p>
-                        カルディは、ジャバの起源について学び、ジャバを育てた農家をサポートしたいコーヒー愛好家にとって究極のスポットです。
+                        カルディは、ジャバの起源について学び、ジャバを育てた農家をサポートしたいコーヒー愛好家にとって究極の場所です。
                         私たちはコーヒーの生産、焙煎、醸造を真剣に受け止めており、その知識を誰にでも伝えられることを嬉しく思います。
                       </p>
                     </div>
@@ -71,6 +82,63 @@ const IndexPage = ({ blogs }) => {
                         <a className="btn">すべての商品を見る</a>
                       </Link>
                     </div>
+                  </div>
+                  <div className="column is-12">
+                    <h3 className="has-text-weight-semibold is-size-2">予約</h3>
+                    <iframe
+                      className="min-h-[500px] border-0"
+                      src="https://squareup.com/appointments/buyer/widget/etln4ovuhmaj84/L683242F5A56N"
+                      width="100%"
+                      height="100%"
+                    ></iframe>
+                  </div>
+                  <div className="column is-12">
+                    <h3 className="has-text-weight-semibold is-size-2">
+                      お客様からの口コミ
+                    </h3>
+                    <Typography className="mb-6 inline-block">
+                      総合評価:
+                    </Typography>
+                    <Rate
+                      className="inline-block"
+                      disabled
+                      defaultValue={result.rating}
+                    />
+                    <Row
+                      gutter={[32, 32]}
+                      justify="space-around"
+                      className=" mb-10"
+                    >
+                      {result.reviews.map((review, index) => {
+                        return (
+                          <Col key={index} md={24} lg={12} xl={8}>
+                            <Card hoverable className="min-h-[300px]">
+                              <div className="grid grid-rows-12">
+                                <Link href={review.author_url}>
+                                  <a>
+                                    <Avatar src={review.profile_photo_url} />
+                                    <Typography className="inline-block ml-5">
+                                      {review.author_name}
+                                    </Typography>
+                                  </a>
+                                </Link>
+                                <Typography className="text-gray-500 ml-6">
+                                  {review.relative_time_description}
+                                </Typography>
+                                <Rate
+                                  className="justify-self-end"
+                                  disabled
+                                  defaultValue={review.rating}
+                                />
+                                <Typography className="self-center row-span-8">
+                                  {review.text}
+                                </Typography>
+                              </div>
+                            </Card>
+                          </Col>
+                        );
+                      })}
+                    </Row>
                   </div>
                   <div className="column is-12">
                     <h3 className="has-text-weight-semibold is-size-2">
@@ -97,10 +165,16 @@ export default IndexPage;
 
 export const getStaticProps = async () => {
   const data = await client.get({ endpoint: "blogs" });
-
+  const result = await axios
+    .get(
+      "https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=ChIJD3OsNGDxGGAR-ZP3DqsU1DE&key=AIzaSyCPCjFkyaxs--NYunGqICEOpQ39FgoRkMA"
+    )
+    .then((result) => result.data.result)
+    .catch((err) => err);
   return {
     props: {
       blogs: data.contents,
+      result,
     },
   };
 };

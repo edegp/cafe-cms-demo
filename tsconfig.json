@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "baseUrl": "./pages",
+    "baseUrl": ".",
+    "paths": {
+      "styles/*": ["../styles/*"]
+    },
     "checkJs": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,

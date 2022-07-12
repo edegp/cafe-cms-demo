@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import github from "../public/github-icon.svg";
-import logo from "../public/logo.svg";
+import github from "public/img/github-icon.svg";
+import logo from "public/img/logo.svg";
 
 function Navbar() {
   const [active, setActive] = useState(false);

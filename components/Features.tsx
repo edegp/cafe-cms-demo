@@ -11,7 +11,7 @@ const FeatureGrid = ({ gridItems }) => (
               <Image src={item.image} objectFit="contain" layout="intrinsic" />
             </div>
           </div>
-          <p>{item.text}</p>
+          <p className="text-xs">{item.text}</p>
         </section>
       </div>
     ))}

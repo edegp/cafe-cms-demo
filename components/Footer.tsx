@@ -1,11 +1,11 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import logo from "../public/logo.svg";
-import facebook from "../public/social/facebook.svg";
-import instagram from "../public/social/instagram.svg";
-import twitter from "../public/social/twitter.svg";
-import vimeo from "../public/social/vimeo.svg";
+import logo from "public/img/logo.svg";
+import facebook from "public/social/facebook.svg";
+import instagram from "public/social/instagram.svg";
+import twitter from "public/social/twitter.svg";
+import vimeo from "public/social/vimeo.svg";
 
 function Footer() {
   return (
