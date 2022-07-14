@@ -3,12 +3,11 @@ import React from "react";
 import { Button, Card, Modal, Typography } from "antd";
 import { ExclamationCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { useLocale } from "utils/useLocale";
 
 const ErrorModal = () => {
   const axiosError = useSelector((state) => state.axiosError);
   const dispatch = useDispatch();
-  const { t } = useLocale();
+  const t = useSelector((state) => state.t);
   const reload = () => {
     location.reload();
     return;

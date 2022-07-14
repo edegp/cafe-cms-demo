@@ -77,29 +77,41 @@ function Footer() {
                 <Image
                   src={facebook}
                   alt="Facebook"
-                  style={{ width: "1em", height: "1em" }}
+                  // layout="fill"
+                  width="24"
+                  height="24"
+                  // style={{ width: "1em", height: "1em" }}
                 />
               </a>
               <a title="twitter" href="https://twitter.com">
                 <Image
                   className="fas fa-lg"
                   src={twitter}
+                  // layout="fill"
                   alt="Twitter"
-                  style={{ width: "1em", height: "1em" }}
+                  width="24"
+                  height="24"
+                  // style={{ width: "1em", height: "1em" }}
                 />
               </a>
               <a title="instagram" href="https://instagram.com">
                 <Image
                   src={instagram}
                   alt="Instagram"
-                  style={{ width: "1em", height: "1em" }}
+                  // layout="fill"
+                  width="24"
+                  height="24"
+                  // style={{ width: "1em", height: "1em" }}
                 />
               </a>
               <a title="vimeo" href="https://vimeo.com">
                 <Image
                   src={vimeo}
                   alt="Vimeo"
-                  style={{ width: "1em", height: "1em" }}
+                  // layout="fill"
+                  width="24"
+                  height="24"
+                  // style={{ width: "1em", height: "1em" }}
                 />
               </a>
             </div>

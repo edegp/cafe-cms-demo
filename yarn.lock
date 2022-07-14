@@ -81,7 +81,7 @@
     "@aws-amplify/core" "4.5.9"
     axios "0.26.0"
 
-"@aws-amplify/api@4.0.45", "@aws-amplify/api@^4.0.45":
+"@aws-amplify/api@4.0.45":
   version "4.0.45"
   resolved "https://registry.yarnpkg.com/@aws-amplify/api/-/api-4.0.45.tgz#f63fc1ba3b5ea6ada31b3cdecddc8b3bfcc6ab74"
   integrity sha512-T8tiu1V2wwVjtkpGnntmAuAUJKdNCQYWNoa0tiZdb2VVrlfSLBhJrmJsZgb6Pg4f2umOdrSIBGrVLWgrYGNu6g==
@@ -1709,9 +1709,9 @@
   integrity sha512-9gwhYnkTNuYZ+etCtM4T8gjpZ0SWSXbzQxY34UjSS+dt3C/UnbX0J22tMahp/9Z1yCa9pihtXrkD+nO2xn7nVQ==
 
 "@aws-sdk/types@^3.1.0":
-  version "3.110.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.110.0.tgz#09404533b507925eadf9acf9c4356667048e45bd"
-  integrity sha512-dLVoqODU3laaqNFPyN1QLtlQnwX4gNPMXptEBIt/iJpuZf66IYJe6WCzVZGt4Zfa1CnUmrlA428AzdcA/KCr2A==
+  version "3.127.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/types/-/types-3.127.0.tgz#a7bafc47ee2328eee2453087521e6c3a39e7278d"
+  integrity sha512-e0wtx2IkOl7rwfKfLH5pPTzQ+d45V7b1WrjeL0WDI8kOu6w+sXmhNxI6uM2kf0k4NiTLN84lW290AEWupey9Og==
 
 "@aws-sdk/url-parser-native@3.6.1":
   version "3.6.1"
@@ -5844,6 +5844,11 @@ moment@^2.24.0, moment@^2.29.2:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.3.tgz#edd47411c322413999f7a5940d526de183c031f3"
   integrity sha512-c6YRvhEo//6T2Jz/vVtYzqBzwvPT95JBQ+smCytzf7c50oMZRsR/a4w88aD34I+/QVSfnoAnSBFPJHItlOMJVw==
 
+moment@^2.29.4:
+  version "2.29.4"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
+  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
 mrmime@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/mrmime/-/mrmime-1.0.1.tgz#5f90c825fad4bdd41dc914eff5d1a8cfdaf24f27"
@@ -6786,6 +6791,11 @@ reduce-css-calc@^2.1.6:
   dependencies:
     css-unit-converter "^1.1.1"
     postcss-value-parser "^3.3.0"
+
+redux-persist@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-6.0.0.tgz#b4d2972f9859597c130d40d4b146fecdab51b3a8"
+  integrity sha512-71LLMbUq2r02ng2We9S215LtPu3fY0KgaGE0k8WRgl6RkqxtGfl7HUozz1Dftwsb0D/5mZ8dwAaPbtnzfvbEwQ==
 
 redux-thunk@^2.4.1:
   version "2.4.1"

@@ -2,39 +2,38 @@ import "styles/tailwind.scss";
 import "styles/globals.scss";
 import "styles/tailwind-utils.scss";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { store } from "store";
-import { Provider, useSelector, useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 import RestaurantLayout from "components/RestaurantLayout";
 import { getLiffProfile } from "utils/liff";
 import { useRouter } from "next/router";
-import { setStarted, setLocale, setLineUser, setFlash } from "store";
+import {
+  setStarted,
+  setLocale,
+  setLineUser,
+  setFlash,
+  setT,
+  persistor,
+} from "store";
+import { PersistGate } from "redux-persist/integration/react";
 
 const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const { message, lineUser, locale } = store.getState();
-  const restaurant = [
-    "Restaurant",
-    "Delete",
-    "areas",
-    "completed",
-    "delete_completed",
-  ];
-  console.log(Component.name);
+  const { lineUser } = store.getState();
+  const [message, setMessage] = useState();
   useEffect(() => {
-    if (restaurant.includes(Component.name)) {
+    if (router.pathname.startsWith("/restaurant")) {
       Promise.all([import("@line/liff"), import("@line/liff-mock")]).then(
         (result) => {
           const liff = result[0].default;
           const LiffMockPlugin = result[1].default;
           const inited = message?.["LIFF_INITED"];
-          console.log(inited);
           //  　LIFFプロファイル取得・設定
           const _settingLiffProfile = async (liff) => {
             const _lineUser = await getLiffProfile(liff);
-            console.log(_lineUser);
             store.dispatch(setLineUser(_lineUser));
           };
           // LIFF Login & Profile
@@ -48,6 +47,7 @@ function MyApp({ Component, pageProps }) {
               const expire = parseInt(lineUser.expire, 10);
               if (expire < now.getTime()) {
                 // Get LIFF Profile & Token
+                _settingLiffProfile(liff);
               }
             }
           } else {
@@ -63,6 +63,7 @@ function MyApp({ Component, pageProps }) {
             if ("lang" in router.query) {
               store.dispatch(setLocale(router.query.lang));
             }
+            store.dispatch(setT(router.locale));
             // LIFF Initialize
             liff.use(new LiffMockPlugin());
             liff
@@ -72,6 +73,7 @@ function MyApp({ Component, pageProps }) {
               })
               .then(() => {
                 store.dispatch(setFlash({ name: "LIFF_INITED", value: true }));
+                setMessage({ LIFF_INITED: true });
                 const loggedIn = liff.isLoggedIn();
                 if (!loggedIn) {
                   liff.login();
@@ -84,8 +86,8 @@ function MyApp({ Component, pageProps }) {
         }
       );
     }
-  }, [lineUser]);
-  if (restaurant.includes(Component.name))
+  }, [router.pathname, message, []]);
+  if (router.pathname.startsWith("/restaurant"))
     return (
       // <LiffProvider
       //   liffId={process.env.NEXT_PUBLIC_LIFF_ID}
@@ -95,9 +97,11 @@ function MyApp({ Component, pageProps }) {
       // >
       //   <MyUserContextProvider>
       <Provider store={store}>
-        <RestaurantLayout>
-          <Component {...pageProps} />
-        </RestaurantLayout>
+        <PersistGate loading={<div>loading...</div>} persistor={persistor}>
+          <RestaurantLayout>
+            <Component {...pageProps} />
+          </RestaurantLayout>
+        </PersistGate>
       </Provider>
       //   </MyUserContextProvider>
       // </LiffProvider>
