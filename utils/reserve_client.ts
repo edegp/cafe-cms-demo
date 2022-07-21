@@ -4,7 +4,7 @@ import axios from "axios";
 import { showHttpError } from "utils/helpers";
 import { Amplify, API } from "aws-amplify";
 
-const _stage = `/${process.env.APIGATEWAY_STAGE}`;
+const _stage = `/${process.env.NEXT_PUBLIC_APIGATEWAY_STAGE}`;
 
 const { locale } = store.getState();
 
@@ -14,7 +14,7 @@ Amplify.configure({
     endpoints: [
       {
         name: "LambdaAPIGateway",
-        endpoint: process.env.BASE_URL,
+        endpoint: process.env.NEXT_PUBLIC_BASE_URL,
       },
     ],
   },

@@ -1,4 +1,8 @@
 {
-  "plugins": ["tailwindcss"],
-  "extends": ["plugin:tailwindcss/recommended", "next/core-web-vitals"]
+  "plugins": ["tailwindcss", "react-redux"],
+  "extends": [
+    "plugin:tailwindcss/recommended",
+    "next/core-web-vitals",
+    "plugin:react-redux/recommended"
+  ]
 }

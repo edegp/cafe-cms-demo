@@ -1,15 +1,23 @@
-import React from "react";
+/* eslint-disable tailwindcss/no-custom-classname */
+import React, { useState, useCallback, useRef } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import {
   Button,
-  Calendar,
   Col,
   Layout,
-  Radio,
   Row,
   Select,
   Typography,
+  Modal,
+  Drawer,
+  Form,
+  InputNumber,
+  Spin,
+  Input,
 } from "antd";
-import { store, setT } from "store";
+import AntdCalendar from "antd/lib/calendar";
+import { store, setT, setFlash, RootState } from "store";
+import Link from "next/link";
 import {
   getAreaShops,
   getCourses,
@@ -18,143 +26,747 @@ import {
   now,
   timeList,
   isHoliday,
+  createStatusRecord,
+  getDailyReservationStatus,
+  updateReserve,
 } from "utils/helpers";
 import { Footer } from "antd/lib/layout/layout";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import locale from "antd/lib/calendar/locale/ja_JP";
+import "moment/locale/ja";
+import moment, { Moment } from "moment";
+import locale from "antd//lib/calendar/locale/ja_JP";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import {
+  CheckCircleTwoTone,
+  ExclamationCircleTwoTone,
+  LoadingOutlined,
+} from "@ant-design/icons";
+import SwiperCore from "swiper";
 
-const headerRendar = ({ value, type, onChange, onTypeChange }) => {
-  const start = 0;
-  const end = 12;
-  const monthOptions = [];
-
-  const current = value.clone();
-  const localeData = value.localeData();
-  const months = [];
-  for (let i = 0; i < 12; i++) {
-    current.month(i);
-    months.push(localeData.monthsShort(current));
-  }
-
-  for (let i = start; i < end; i++) {
-    monthOptions.push(
-      <Select.Option key={i} value={i} className="month-item">
-        {months[i]}
-      </Select.Option>
-    );
-  }
-
-  const year = value.year();
-  const month = value.month();
-  const options = [];
-  for (let i = year - 10; i < year + 10; i += 1) {
-    options.push(
-      <Select.Option key={i} value={i} className="year-item">
-        {i}
-      </Select.Option>
-    );
-  }
-  return (
-    <div style={{ padding: 8 }}>
-      <Typography.Title level={4}>Custom header</Typography.Title>
-      <Row gutter={8}>
-        <Col>
-          <Radio.Group
-            size="small"
-            onChange={(e) => onTypeChange(e.target.value)}
-            value={type}
-          >
-            <Radio.Button value="month">Month</Radio.Button>
-            <Radio.Button value="year">Year</Radio.Button>
-          </Radio.Group>
-        </Col>
-        <Col>
-          <Select
-            size="small"
-            dropdownMatchSelectWidth={false}
-            className="my-year-select"
-            value={year}
-            onChange={(newYear) => {
-              const now = value.clone().year(newYear);
-              onChange(now);
-            }}
-          >
-            {options}
-          </Select>
-        </Col>
-        <Col>
-          <Select
-            size="small"
-            dropdownMatchSelectWidth={false}
-            value={month}
-            onChange={(newMonth) => {
-              const now = value.clone().month(newMonth);
-              onChange(now);
-            }}
-          >
-            {monthOptions}
-          </Select>
-        </Col>
-      </Row>
-    </div>
-  );
-};
-
-export default function index(props) {
+export default function Idex(props: {
+  statuses: any;
+  area: any;
+  restaurant: any;
+  selectedMonth: any;
+  minDate: any;
+  maxDate: any;
+  months: any;
+  times: any;
+  course: any;
+  maxSeats: any;
+}) {
+  const {
+    statuses,
+    area,
+    restaurant,
+    selectedMonth,
+    minDate,
+    maxDate,
+    months,
+    times,
+    course,
+    maxSeats,
+  } = props;
   const router = useRouter();
-  console.log(props.statuses);
-  const t = useSelector((state) => state.t);
-  const dayStatus = (d) => {
-    const date = d.format("YYYY-MM-DD");
-    let ret = 1;
-    if (date in props.statuses) {
-      ret = props.statuses[date].status;
-    } else {
-      ret = isHoliday(date, props.restaurant.holiday) ? 0 : 1;
-    }
-    return ret;
-  };
-  const dateCellRender = (value) => {
-    return (
-      <>
-        {dayStatus(value) === 3 ? (
-          <div>
-            <Button danger>{t.calendar.full}</Button>
+  const swiperRef = useRef() as any;
+  const dispatch = useDispatch();
+  const localizer = momentLocalizer(moment);
+  const [form] = Form.useForm();
+  // eslint-disable-next-line react-redux/useSelector-prefer-selectors
+  const { t, axiosError, lineUser } = useSelector((state: RootState) => state);
+  const [reserveDate, setReserveDate] = useState(null);
+  const [reserveDialog, setReserveDialog] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [month, setMonth] = useState(moment());
+  const [loading, setLoading] = useState(false);
+  const [endtimeDisabled, setEndtimeDisabled] = useState(false);
+  const [errorDialogMessage, setErrorDialogMessage] = useState({
+    title: null,
+    text: null,
+  });
+  //日本語対応
+  moment.locale(router.locale);
+  const newLocale: any = locale;
+  newLocale.lang["shortWeekDays"] = Object.values(t.utils).slice(0, -1);
+  const dayStatus = useCallback(
+    (d) => {
+      let date = d;
+      if (moment.isMoment(d)) date = d.format("YYYY-MM-DD");
+      let ret = 1;
+      if (date in statuses) {
+        ret = statuses[date].status;
+      } else {
+        ret = isHoliday(date, restaurant.holiday) ? 0 : 1;
+      }
+      return ret;
+    },
+    [restaurant, statuses]
+  );
+  const showDayDetail = useCallback(
+    async (date: string) => {
+      const status = dayStatus(date);
+      if (status === 0 || status === 3) {
+        return;
+      } // 「定休日」と「無し」は詳細表示しない
+      let events = await getDailyReservationStatus(
+        restaurant.id,
+        date,
+        restaurant
+      );
+      setEvents(events);
+      if (!axiosError) {
+        form.setFieldsValue({ ...form.getFieldsValue(true), day: date });
+      }
+      setReserveDate(date);
+    },
+    [axiosError, dayStatus, form, restaurant]
+  );
+  const changeCourse = useCallback(
+    (start: string, courseId: number) => {
+      setEndtimeDisabled(false);
+      if (!start || !courseId) {
+        return;
+      }
+      if (courseId > 0) {
+        setEndtimeDisabled(true);
+      }
+      // 終了時間算出
+      let endTime = moment(reserveDate + " " + start)
+        .add(course[courseId].time, "m")
+        .format("HH:mm");
+      form.setFieldsValue({
+        ...form.getFieldsValue(true),
+        end: times.find((v: { value: string }) => v.value === endTime)
+          ? endTime
+          : null,
+      });
+    },
+    [reserveDate, course, form, times]
+  );
+  const reserve = useCallback(
+    async (value: {
+      course?: any;
+      people?: any;
+      end?: any;
+      start?: any;
+      day?: any;
+    }) => {
+      setLoading(true);
+      const { people, end, start, day } = value;
+      const token = lineUser.token;
+      const shopId = restaurant.id;
+      const courseId = value.course;
+      // デモ用
+      const setCourse = course.find((v: { id: any }) => v.id === courseId);
+      const names = {
+        userName: lineUser.name,
+        shopName: restaurant.name,
+        courseName:
+          courseId == 0
+            ? t.calendar.msg014
+            : setCourse
+            ? setCourse.name
+            : t.calendar.msg014,
+      };
+
+      try {
+        // 予約申込送信
+        const data = await updateReserve(
+          token,
+          shopId,
+          day,
+          start,
+          end,
+          courseId,
+          people,
+          names
+        );
+        if (data) {
+          const reservationId = data.reservationId;
+          if (isNaN(reservationId)) {
+            setReserveDialog(false);
+          } else {
+            setErrorDialogMessage({
+              ...errorDialogMessage,
+              title: t.calendar.msg016,
+              text: t.calendar.msg017,
+            });
+            return false;
+          }
+          // ページ遷移
+          let courseInfo = {
+            id: 0,
+            name: t.calendar.msg014,
+            time: 0,
+            price: 0,
+            comment: null,
+            text: t.calendar.msg014,
+            value: 0,
+          };
+          if (courseId > 0) {
+            courseInfo = course[courseId];
+          }
+          const message = {
+            no: reservationId,
+            restaurant: restaurant,
+            name: lineUser.name,
+            course: courseInfo,
+            day: day,
+            people: people,
+            start: start,
+            end: end,
+          };
+          dispatch(setFlash(message));
+          await router.push("/restaurant/completed");
+        }
+      } finally {
+        setLoading(false);
+      }
+      return true;
+    },
+    [
+      course,
+      dispatch,
+      errorDialogMessage,
+      lineUser.name,
+      lineUser.token,
+      restaurant,
+      router,
+      t.calendar.msg014,
+      t.calendar.msg016,
+      t.calendar.msg017,
+    ]
+  );
+  const handleClese = useCallback(() => setReserveDate(null), []);
+  const calendarChange = useCallback(
+    (value: React.SetStateAction<moment.Moment>) => setMonth(value),
+    []
+  );
+  const handleSlideNext = useCallback(
+    () =>
+      showDayDetail(moment(reserveDate).add(1, "days").format("YYYY-MM-DD")),
+    [reserveDate, showDayDetail]
+  );
+  const handleSlidePrev = useCallback(
+    () =>
+      showDayDetail(
+        moment(reserveDate).subtract(1, "days").format("YYYY-MM-DD")
+      ),
+    [reserveDate, showDayDetail]
+  );
+  const handleNavigate = useCallback(
+    (newDate: moment.MomentInput) => {
+      const newD = moment(newDate).format("YYYY-MM-DD");
+      if (newD < moment().format("YYYY-MM-DD")) {
+        setErrorDialogMessage({
+          ...errorDialogMessage,
+          title: "これ以上進めません",
+          text: "×ボタンを押して予約する日にちを再指定してください",
+        });
+        return;
+      }
+      const swiper = swiperRef?.current?.swiper;
+      moment().add(14, "days").format("YYYY-MM-DD") !== reserveDate &&
+      reserveDate < newD
+        ? swiper.slideNext()
+        : moment().subtract(15, "days").format("YYYY-MM-DD") !== reserveDate &&
+          reserveDate > newD
+        ? swiper.slidePrev()
+        : setErrorDialogMessage({
+            ...errorDialogMessage,
+            title: "これ以上進めません",
+            text: "×ボタンを押して予約する日にちを再指定してください",
+          });
+      showDayDetail(newD);
+    },
+    [errorDialogMessage, reserveDate, showDayDetail]
+  );
+  const handleSelectEvent = useCallback(
+    (calEvent: { start: moment.MomentInput; end: moment.MomentInput }) => {
+      setReserveDialog(true);
+      form.setFieldsValue({
+        ...form.getFieldsValue(true),
+        start: moment(calEvent.start).format("HH:mm"),
+        end: moment(calEvent.end).format("HH:mm"),
+      });
+    },
+    [form]
+  );
+  const handleCancel = useCallback(() => {
+    setReserveDialog(false);
+    form.getFieldsValue({
+      ...form.getFieldsValue(true),
+      start: null,
+      end: null,
+      course: 0,
+    });
+  }, [form]);
+  const handleFinishFailed = useCallback(
+    (errorInfo: any) => console.log("Failed:", errorInfo),
+    []
+  );
+  const handleCourseChange = useCallback(
+    (value: any) => changeCourse(form.getFieldValue("start"), value),
+    [changeCourse, form]
+  );
+  const handleErrorModalClick = useCallback(
+    () =>
+      setErrorDialogMessage({
+        ...errorDialogMessage,
+        title: "",
+        text: "",
+      }),
+    [errorDialogMessage]
+  );
+
+  const headerRendar = useCallback(
+    ({ value, onChange }) => {
+      const start = parseInt(minDate.slice(4, -2).replace(/^0/, ""), 10) - 1;
+      const end = parseInt(maxDate.slice(4, -2).replace(/^0/, ""), 10);
+      const monthOptions = [];
+      const current = value.clone();
+      const localeData = value.localeData();
+      const months = [];
+      for (let i = 0; i < 12; i++) {
+        current.month(i);
+        months.push(localeData.monthsShort(current));
+      }
+      for (let i = start; i < end; i++) {
+        monthOptions.push(
+          // eslint-disable-next-line tailwindcss/no-custom-classname
+          <Select.Option key={i} value={i} className="month-item">
+            {months[i]}
+          </Select.Option>
+        );
+      }
+      const year = value.year();
+      const month = value.month();
+      const options = [];
+      for (let i = year; i < year + 1; i += 1) {
+        options.push(
+          // eslint-disable-next-line tailwindcss/no-custom-classname
+          <Select.Option key={i} value={i} className="year-item">
+            {i}
+          </Select.Option>
+        );
+      }
+      return (
+        <div className=" p-8">
+          <Typography.Title level={4} className="my-vw-8 text-center">
+            <span className="line-color">
+              <span className="hidden-xs-only">
+                {area ? area.name : null}&nbsp;
+              </span>
+              {restaurant ? restaurant.name : null}
+            </span>
+          </Typography.Title>
+          <Row gutter={8}>
+            <Col>
+              <Select
+                size="small"
+                dropdownMatchSelectWidth={false}
+                // eslint-disable-next-line tailwindcss/no-custom-classname
+                className="my-year-select"
+                value={year}
+                onChange={(newYear) => onChange(value.clone().year(newYear))}
+              >
+                {options}
+              </Select>
+            </Col>
+            <Col>
+              <Select
+                size="small"
+                dropdownMatchSelectWidth={false}
+                value={month}
+                onChange={(newMonth) => onChange(value.clone().month(newMonth))}
+              >
+                {monthOptions}
+              </Select>
+            </Col>
+          </Row>
+        </div>
+      );
+    },
+    [area, maxDate, minDate, restaurant]
+  );
+
+  const dateFullCellRender = useCallback(
+    (value: Moment) => {
+      const valueMonth = value.month() + 1;
+      const curMonth = month.month() + 1;
+      const status = dayStatus(value);
+      return (
+        <>
+          <div
+            className={`h-[9vw] min-h-[82px] text-center mb-1 ${
+              valueMonth === curMonth &&
+              value > moment(minDate) &&
+              value < moment(maxDate)
+                ? ""
+                : "text-zinc-400"
+            }`}
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            onClick={useCallback(
+              () => showDayDetail(value.format("YYYY-MM-DD")),
+              [value]
+            )}
+          >
+            <span className="mt-vw-3">
+              {valueMonth}/{value.date()}
+            </span>
+            {valueMonth === curMonth &&
+            value > moment(minDate) &&
+            value < moment(maxDate) ? (
+              status === 3 ? (
+                <Button danger>{t.calendar.full}</Button>
+              ) : status === 2 ? (
+                <>
+                  <div>
+                    <ExclamationCircleTwoTone
+                      twoToneColor="rgb(234 179 8)"
+                      className="text-[28px]"
+                    />
+                  </div>
+                  {/* <Button className="mt-vw-2 bg-yellow-500 ">
+                    {t.calendar.vacant_little}
+                  </Button> */}
+                </>
+              ) : status === 1 ? (
+                <>
+                  <div className="mt-4">
+                    <CheckCircleTwoTone
+                      twoToneColor="rgb(34 197 94)"
+                      className="text-[28px]"
+                    />
+                  </div>
+                  {/* <Button
+                    className="px-2 mt-vw-2 w-8 tracking-[24px] text-center text-black rounded-full tablet:w-12 tablet:tracking-wide"
+                    type="link"
+                  >
+                    {t.calendar.vacancy}
+                  </Button> */}
+                </>
+              ) : (
+                <Button type="link" danger>
+                  {t.calendar.closingday}
+                </Button>
+              )
+            ) : (
+              <></>
+            )}
           </div>
-        ) : dayStatus(value) === 2 ? (
-          <div>
-            <Button className="bg-yellow-500">
-              {t.calendar.vacant_little}
-            </Button>
-          </div>
-        ) : dayStatus(value) === 1 ? (
-          <div>
-            <div>{t.calendar.vacancy}</div>
-            <Button className="bg-green-500 text-white rounded-full">
-              {t.calendar.vacant}
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <Button type="link" danger>
-              {t.calendar.closingday}
-            </Button>
-          </div>
-        )}
-      </>
-    );
-  };
+        </>
+      );
+    },
+    [
+      dayStatus,
+      maxDate,
+      minDate,
+      month,
+      showDayDetail,
+      t.calendar.closingday,
+      t.calendar.full,
+    ]
+  );
+
   return (
-    <Layout>
+    <Layout className="z-0 bg-white">
       <Layout.Content>
-        <Calendar
-          dateCellRender={dateCellRender}
+        <AntdCalendar
+          dateFullCellRender={dateFullCellRender}
           headerRender={headerRendar}
-          locale={locale}
+          locale={newLocale}
+          defaultValue={moment()}
+          validRange={[moment(minDate), moment(maxDate)]}
+          onChange={calendarChange}
+          className="mx-vw-10"
         />
+        <Spin
+          spinning={loading}
+          className="top-[-250px] z-50 text-primary"
+          indicator={
+            <LoadingOutlined className="font-[36px] text-primary" spin />
+          }
+          size="large"
+          tip="送信中"
+        >
+          <Drawer
+            zIndex={10}
+            visible={Boolean(reserveDate)}
+            onClose={handleClese}
+            width={"100%"}
+            height={"100vh"}
+            placement="bottom"
+          >
+            <Typography>
+              {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
+            </Typography>
+            <Swiper
+              // ref={swiperRef}
+              onInit={(core: SwiperCore) => {
+                swiperRef.current = core.el;
+              }}
+              loop={true}
+              slidesPerView={1}
+              onSlideNextTransitionStart={handleSlideNext}
+              onSlidePrevTransitionStart={handleSlidePrev}
+            >
+              <SwiperSlide>
+                <div className="h-[90vh]">
+                  <Calendar
+                    events={events.map((event, index) => ({
+                      id: index,
+                      title: event.name,
+                      start: new Date(event.start),
+                      end: new Date(event.end),
+                    }))}
+                    step={30}
+                    views={["day"]}
+                    defaultView="day"
+                    localizer={localizer}
+                    timeslots={2}
+                    date={new Date(reserveDate)}
+                    onNavigate={handleNavigate}
+                    min={
+                      new Date(
+                        minDate.slice(0, 4),
+                        minDate.slice(4, 6),
+                        minDate.slice(6, 8),
+                        9,
+                        0,
+                        0
+                      )
+                    }
+                    max={new Date(0, 0, 0, 23, 0, 0)}
+                    eventPropGetter={() => ({
+                      className:
+                        "odd:bg-slate-400 even:bg-primary  border-white pl-vw-36 align-items-center space-between opacity-80",
+                    })}
+                    onSelectEvent={handleSelectEvent}
+                    formats={{
+                      dayHeaderFormat: (
+                        date: any,
+                        culture: any,
+                        localizer: {
+                          format: (arg0: any, arg1: string, arg2: any) => any;
+                        }
+                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
+                    }}
+                  />
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className="h-[90vh]">
+                  <Calendar
+                    events={events.map((event, index) => ({
+                      id: index,
+                      title: event.name,
+                      start: new Date(event.start),
+                      end: new Date(event.end),
+                    }))}
+                    step={30}
+                    views={["day"]}
+                    defaultView="day"
+                    localizer={localizer}
+                    timeslots={2}
+                    date={new Date(reserveDate)}
+                    onNavigate={handleNavigate}
+                    min={
+                      new Date(
+                        parseInt(minDate.slice(0, 4), 10),
+                        parseInt(minDate.slice(4, 6), 10),
+                        parseInt(minDate.slice(6, 8), 10),
+                        9,
+                        0,
+                        0
+                      )
+                    }
+                    max={new Date(0, 0, 0, 23, 0, 0)}
+                    eventPropGetter={() => ({
+                      className:
+                        "even:bg-slate-400 odd:bg-primary border-white pl-vw-36 align-items-center space-between opacity-80",
+                    })}
+                    onSelectEvent={handleSelectEvent}
+                    formats={{
+                      dayHeaderFormat: (
+                        date: any,
+                        culture: any,
+                        localizer: {
+                          format: (arg0: any, arg1: string, arg2: any) => any;
+                        }
+                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
+                    }}
+                  />
+                </div>
+              </SwiperSlide>
+            </Swiper>
+          </Drawer>
+          <Modal
+            zIndex={20}
+            visible={reserveDialog}
+            closable={true}
+            maskClosable={true}
+            onCancel={handleCancel}
+            footer={null}
+          >
+            <Form
+              form={form}
+              requiredMark={"optional"}
+              layout="vertical"
+              onFinish={reserve}
+              onFinishFailed={handleFinishFailed}
+              className="mt-6"
+              // onValuesChange={(changeValue) => {}}
+            >
+              <Form.Item
+                name="day"
+                hidden
+                rules={[{ required: true, message: "必須項目です" }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                name="start"
+                label="開始時刻"
+                rules={[{ required: true, message: "必須項目です" }]}
+              >
+                <Select
+                  onChange={useCallback(
+                    (value) =>
+                      changeCourse(value, form.getFieldValue("course")),
+                    [changeCourse, form]
+                  )}
+                >
+                  {events.map((event) => {
+                    const startTime = moment(event.start).format("HH:mm");
+                    return (
+                      <Select.Option key={event.id} value={startTime}>
+                        {startTime}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                name="end"
+                label="終了時刻"
+                rules={[
+                  { required: true, message: "必須項目です" },
+                  {
+                    validator: (_, value) => {
+                      if (value < form.getFieldValue("start")) {
+                        return Promise.reject(
+                          new Error("終了時刻 が 開始時刻 以前になっています")
+                        );
+                      } else {
+                        return Promise.resolve();
+                      }
+                    },
+                  },
+                ]}
+              >
+                <Select disabled={endtimeDisabled}>
+                  {events.map((event) => {
+                    const endTime = moment(event.end).format("HH:mm");
+                    return (
+                      <Select.Option key={event.id} value={endTime}>
+                        {endTime}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label="人数"
+                name="people"
+                rules={[{ required: true, message: "必須項目です" }]}
+                initialValue={1}
+              >
+                <InputNumber min={1} max={150} />
+              </Form.Item>
+              <Form.Item name="course" label="コース">
+                <Select onChange={handleCourseChange}>
+                  {course.map(
+                    (c: {
+                      id: React.Key;
+                      name:
+                        | string
+                        | number
+                        | boolean
+                        | React.ReactElement<
+                            any,
+                            string | React.JSXElementConstructor<any>
+                          >
+                        | React.ReactFragment
+                        | React.ReactPortal;
+                      price:
+                        | string
+                        | number
+                        | boolean
+                        | React.ReactElement<
+                            any,
+                            string | React.JSXElementConstructor<any>
+                          >
+                        | React.ReactFragment
+                        | React.ReactPortal;
+                    }) => (
+                      <Select.Option key={c.id} value={c.id}>
+                        {c.name}（税込 {c.price}円）
+                      </Select.Option>
+                    )
+                  )}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                shouldUpdate={(prevValues, curValues) =>
+                  prevValues.course !== curValues.course
+                }
+              >
+                {({ getFieldValue }) =>
+                  getFieldValue("course") > 0 && (
+                    <pre>{course[getFieldValue("course")]?.comment}</pre>
+                  )
+                }
+              </Form.Item>
+              <Form.Item className="w-full">
+                <Button
+                  key="submit"
+                  type="primary"
+                  htmlType="submit"
+                  className="absolute bottom-0 w-full bg-primary rounded-sm border-primary"
+                >
+                  予約する
+                </Button>
+              </Form.Item>
+            </Form>
+          </Modal>
+        </Spin>
+        <Modal
+          visible={Boolean(errorDialogMessage.title)}
+          onCancel={handleErrorModalClick}
+          onOk={handleErrorModalClick}
+        >
+          <Typography>
+            <span>{errorDialogMessage.title}</span>
+          </Typography>
+          <Typography>
+            <span>{errorDialogMessage.text}</span>
+          </Typography>
+        </Modal>
       </Layout.Content>
-      <Footer></Footer>
+      <Footer className="flex bg-white">
+        <Button className="mr-vw-8 text-zinc-600 bg-white border-zinc-600">
+          <Link href="/restaurant" passHref>
+            予約TOPへ
+          </Link>
+        </Button>
+        <Button className="text-zinc-600 bg-white border-zinc-600">
+          <Link href="/restaurant/area" passHref>
+            店舗選択
+          </Link>
+        </Button>
+      </Footer>
     </Layout>
   );
 }
@@ -162,10 +774,10 @@ export default function index(props) {
 export const getStaticPaths = async ({ locales }) => {
   store.dispatch(setT(locales[0]));
   const data = await getAreaShops();
-  const restaurants = Object.entries(data.restaurants);
-  const paths = restaurants
-    .map(([key, value]) =>
-      value.map((restaurant) => ({
+  const restaurants = data.restaurants;
+  const paths = Object.keys(restaurants)
+    .map((key) =>
+      restaurants[key].map((restaurant: { id: { toString: () => any } }) => ({
         params: { code: key, id: restaurant.id.toString() },
         locale: locales[0],
       }))
@@ -179,28 +791,25 @@ export const getStaticPaths = async ({ locales }) => {
 
 export const getStaticProps = async ({ params, locale }) => {
   store.dispatch(setT(locale));
-  const months = monthList(2);
+  const months = monthList(3);
   const minDate = now("yyyymmdd");
-  const maxDate = now("yyyymmdd", 2);
+  const maxDate = now("yyyymmdd", 3);
   const data = await getAreaShops();
   const area = data.areas.find((v) => v.code == params.code);
   const restaurant = data.restaurants[params.code].find(
-    (v) => v.id == params.id
+    (v: { id: any }) => v.id == params.id
   );
   // 予約時間帯リスト取得
   const times = timeList(restaurant.start, restaurant.end);
   // 予約コースリスト取得
-  const coursePromise = getCourses(restaurant.id);
+  const coursePromise = () => getCourses(restaurant.id);
   // 予約状況データ取得
-  const statusesPromise = getMonthlyReservationStatus(
-    restaurant.id,
-    months[0].value,
-    restaurant
-  );
-
-  let course = await coursePromise;
-  let statuses = await statusesPromise;
-
+  const statusesPromise = () =>
+    getMonthlyReservationStatus(restaurant.id, months[0].value, restaurant);
+  const { course, statuses } = await Promise.all([
+    coursePromise(),
+    statusesPromise(),
+  ]).then((result) => ({ course: result[0], statuses: result[1] }));
   return {
     props: {
       statuses,

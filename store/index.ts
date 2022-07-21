@@ -2,9 +2,20 @@ import React from "react";
 import { createSlice, configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
-// import storage from "redux-persist/lib/storage";
 import thunk from "redux-thunk";
 import ja from "public/locales/ja";
+
+interface state {
+  message?: Object;
+  started?: string;
+  locales: [];
+  locale: string;
+  sessionId?: string;
+  lineUser?: Object;
+  restaurant?: Object;
+  axiosError?: Object;
+  t?: Object;
+}
 
 const createNoopStorage = () => {
   return {
@@ -47,11 +58,14 @@ const restaurantSlice = createSlice({
     t: null,
   },
   reducers: {
+    HYDRATE: (state, action) => ({ ...state, ...action.payload }),
+    TICK: (state, action) => ({ ...state, tick: action.payload }),
     clear: (state) => ({
       ...state,
+      message: null,
       started: null,
       locale: "ja",
-      sessionId: null,
+      // sessionId: null,
       lineUser: null,
       restaurant: null,
       axiosError: null,
@@ -81,14 +95,14 @@ const restaurantSlice = createSlice({
         ...state,
         message: {
           ...state.message,
-          [action.payload.name]: action.payload.value,
+          ...action.payload,
         },
       };
     },
     clearFlash: (state, action) => {
-      if (action.payload.name === undefined) {
+      if (action.payload?.name === undefined) {
         return { ...state, message: null };
-      } else if (action.payload.name in state.message) {
+      } else if (action.payload?.name in state.message) {
         return { ...state, message: { [action.payload.name]: undefined } };
       }
     },
@@ -114,12 +128,25 @@ export const {
 } = restaurantSlice.actions;
 export default persistedReducer;
 
+export type RootState = ReturnType<typeof store.getState>;
+
+export type AppDispatch = typeof store.dispatch;
+
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: [thunk],
 });
 
 export const persistor = persistStore(store);
+// export const makeStore = () => {
+//   store.persistor = persistStore(store);
+//   return store;
+// };
+// export const store =
+
+// export const persistor = persistStore(store);
+
+// export const wrapper = createWrapper(makeStore, { debug: true });
 
 export const selectors = {
   axiosError(state) {

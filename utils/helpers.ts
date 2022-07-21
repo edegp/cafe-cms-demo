@@ -1,6 +1,11 @@
 import { store, setLineUser, setAxiosError } from "store";
 import { isIOS, isAndroid } from "react-device-detect";
 import { RestaurantClient } from "utils/reserve_client";
+import { useRouter } from "next/router";
+
+export const _module = process.env.NEXT_PUBLIC_AJAX_MODULE
+  ? process.env.NEXT_PUBLIC_AJAX_MODULE
+  : "axios";
 
 export const weekdayName = (weekday) => {
   let name = "";
@@ -53,10 +58,6 @@ export const openMapApp = (latitude, longitude, zoom, markered = true) => {
     }
   });
 };
-
-export const _module = process.env.AJAX_MODULE
-  ? process.env.AJAX_MODULE
-  : "axios";
 
 export const getAreaShops = async () => {
   let ret = { areas: [], restaurants: {} };
@@ -181,6 +182,8 @@ const liffId = process.env.LIFF_ID;
 export const showHttpError = (error) => {
   if (error.response && error.response.status >= 400) {
     // HTTP 403 Topへ画面遷移
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const router = useRouter();
     if (error.response.status == 403) {
       const { t } = store.getState();
       const errmsg = t.error.msg005;
@@ -190,7 +193,7 @@ export const showHttpError = (error) => {
         liff.logout();
       });
       if (typeof window !== "undefined")
-        window.location(`https://liff.line.me/${liffId}`);
+        router.push(`https://liff.line.me/${liffId}`);
       return true;
     }
 
@@ -430,7 +433,7 @@ export const getCourses = async (shopId) => {
   return ret;
 };
 
-const createStatusRecord = () => {
+export const createStatusRecord = () => {
   return {
     status: null,
     name: null,
@@ -439,6 +442,7 @@ const createStatusRecord = () => {
     events: [],
   };
 };
+
 export function isHoliday(yyyymmdd, holiday) {
   let ret = false;
   let weekday = new Date(yyyymmdd.replace(/-/g, "/")).getDate();
@@ -489,4 +493,183 @@ export const getMonthlyReservationStatus = async (
   }
 
   return ret;
+};
+
+export const getDailyReservationStatus = async (shopId, day, restaurant) => {
+  let ret = [];
+
+  // 日別別予約状況データ取得
+  const data = await RestaurantClient[_module].shopDailyStatus(shopId, day);
+  if (!data) {
+    return ret;
+  }
+  const { t } = store.getState();
+  let events = [];
+  for (const record of data) {
+    if (!("status" in record)) {
+      record["status"] = 0; // 空き有
+      const reservedNumber = record.reservedNumber;
+      const reservedLimit = restaurant.seats;
+      const percentage = reservedNumber / reservedLimit;
+      if (percentage >= 1.0) {
+        record["status"] = 2; // 空き無
+      } else if (percentage >= 0.8) {
+        record["status"] = 1; // 空き少
+      }
+    }
+    // 空き状況
+    let name = t.restaurant.vacant;
+    let color = "success";
+    switch (record.status) {
+      case 1:
+        name = t.restaurant.vacant_little;
+        color = "orange lighten-1";
+        break;
+      case 2:
+        name = t.restaurant.full;
+        color = "error";
+        break;
+    }
+    // 予約
+    let event = {
+      shopId: null,
+      name: null,
+      start: null,
+      end: null,
+      color: null,
+      reserved: null,
+    };
+    event.shopId = restaurant.id;
+    event.name = name;
+    event.start = `${day} ${record.reservedStartTime}`;
+    event.end = `${day} ${record.reservedEndTime}`;
+    event.color = color;
+    event.reserved = record.reservedNumber;
+    events.push(event);
+  }
+
+  // 1日分時間帯イベント取得
+  ret = createEvents(day, restaurant);
+  for (const event of events) {
+    let targetEvent = ret.find((v) => v.start == event.start);
+    if (targetEvent) {
+      // 予約状況イベント反映
+      targetEvent.shopId = event.shopId;
+      targetEvent.name = event.name;
+      targetEvent.start = event.start;
+      targetEvent.end = event.end;
+      targetEvent.color = event.color;
+      targetEvent.reserved = event.reserved;
+    }
+  }
+
+  return ret;
+};
+
+const createEvents = (day, restaurant) => {
+  let ret = [];
+  const { t } = store.getState();
+  // レストラン開始・終了時間
+  const start = `${day.replace(/-/g, "/")} ${restaurant.start}`;
+  const end = `${day.replace(/-/g, "/")} ${restaurant.end}`;
+  let fdate = new Date(start);
+  let tdate = new Date(end);
+  // 営業時間帯
+  let ftime = fdate.getTime();
+  let ttime = tdate.getTime();
+
+  // 時間帯ループ
+  for (let dt = ftime; dt < ttime; dt = dt + 1000 * 60 * 30) {
+    const startDate = new Date(dt);
+    const endDate = new Date(dt + 1000 * 60 * 30);
+    const stime = `${day} ${("00" + startDate.getHours()).slice(-2)}:${(
+      "00" + startDate.getMinutes()
+    ).slice(-2)}`;
+    const etime = `${day} ${("00" + endDate.getHours()).slice(-2)}:${(
+      "00" + endDate.getMinutes()
+    ).slice(-2)}`;
+
+    // イベント
+    let event = {
+      shopId: null,
+      name: null,
+      start: null,
+      end: null,
+      color: null,
+      reserved: null,
+    };
+    event.shopId = restaurant.id;
+    event.name = t.restaurant.vacant;
+    event.start = stime;
+    event.end = etime;
+    event.color = "success";
+    ret.push(event);
+  }
+
+  return ret;
+};
+
+export const updateReserve = async (
+  token,
+  shopId,
+  day,
+  start,
+  end,
+  courseId,
+  people,
+  names
+) => {
+  // LIFF ID Token取得
+  const { lineUser } = store.getState();
+  const idToken = lineUser.idToken;
+
+  const params = {
+    idToken: idToken,
+    accessToken: token,
+    shopId: shopId,
+    shopName: names.shopName,
+    reservationDate: day,
+    reservationStarttime: start,
+    reservationEndtime: end,
+    reservationPeopleNumber: parseInt(people, 10),
+    courseId: courseId,
+    courseName: names.courseName,
+    userName: names.userName,
+  };
+
+  // 予約登録
+  const data = await RestaurantClient[_module].reserve(params);
+  if (!data) {
+    return null;
+  }
+
+  // メッセージ
+  let message = {
+    reservationId: data.reservationId,
+  };
+
+  return message;
+};
+
+export const deleteReserve = async (token, day, shopId, start) => {
+  // LIFF ID Token取得
+  const { lineUser } = store.getState();
+  const idToken = lineUser.idToken;
+  const params = {
+    idToken: idToken,
+    accessToken: token,
+    shopId,
+    reservationDate: day,
+    reservationStarttime: start,
+  };
+  // 予約登録
+  const data = await RestaurantClient[_module].deleteReserve(params);
+  if (!data) {
+    return null;
+  }
+  // メッセージ
+  let message = {
+    data,
+  };
+  return message;
 };

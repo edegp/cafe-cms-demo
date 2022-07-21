@@ -1,8 +1,6 @@
-// @import "~tailwindcss/base";
-// @import "~tailwindcss/components";
-// @import "~tailwindcss/utilities";
-
 @use "~bulma/sass/utilities/initial-variables";
+@use "~react-big-calendar/lib/sass/styles";
+@use "~swiper/scss";
 @use "~antd/dist/antd";
 @use "variables";
 // Config vars
@@ -310,4 +308,23 @@ a {
   text-shadow: 1px 1px 1px #000, -1px 1px 1px #000, 1px -1px 1px #000,
     -1px -1px 1px #000, 1px 0px 1px #000, 0px 1px 1px #000, -1px 0px 1px #000,
     0px -1px 1px #000;
+}
+
+table.ant-picker-content {
+  tbody {
+    td,
+    tr {
+      border-collapse: collapse;
+      border: 1px solid rgb(51, 51, 51);
+    }
+  }
+}
+
+.ant-picker-calendar {
+  table.ant-picker-content {
+    tbody > tr:last-child {
+      display: none;
+      visibility: hidden;
+    }
+  }
 }

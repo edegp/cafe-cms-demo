@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import React from "react";
 import Image from "next/image";
 
@@ -25,7 +26,7 @@ export default function FullWidthImage(props) {
           backgroundAttachment: bgAttachment,
         }}
       >
-        <div className="flex h-[150px] leading-4 justify-around algin-start flex-col">
+        <div className="flex flex-col justify-around h-[150px] leading-4 algin-start">
           {title && (
             <h1
               className="has-text-weight-bold is-size-3-mobile is-size-2-tablet is-size-1-widescreen"

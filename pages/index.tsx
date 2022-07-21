@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
 import { client } from "libs/client";
-import { Rate, Card, Avatar, Typography, Row, Col, Space } from "antd";
+import { Rate, Card, Avatar, Typography, Row, Col, Space, Button } from "antd";
 import Layout from "components/Layout";
 import Features from "components/Features";
 import BlogRoll from "components/BlogRoll";
@@ -36,7 +36,7 @@ const blurbs = [
 const IndexPage = ({ blogs, result }) => {
   return (
     <Layout
-      title="トップページ"
+      title="カルディ非公式　ホームページ"
       description="カルディホームページのトップぺージです"
     >
       <FullWidthImage
@@ -53,7 +53,7 @@ const IndexPage = ({ blogs, result }) => {
                 <div className="content">
                   <div className="content">
                     <div className="tile">
-                      <h1 className="title text-primary font-black">
+                      <h1 className="font-black text-primary title">
                         なぜ、カルディなのか
                       </h1>
                     </div>
@@ -66,7 +66,7 @@ const IndexPage = ({ blogs, result }) => {
                   </div>
                   <div className="columns">
                     <div className="column is-12">
-                      <h3 className="has-text-weight-semibold is-size-2 text-primary font-bold">
+                      <h3 className="font-bold text-primary has-text-weight-semibold is-size-2">
                         良心とともに素晴らしいコーヒーを
                       </h3>
                       <p>
@@ -85,18 +85,24 @@ const IndexPage = ({ blogs, result }) => {
                   </div>
                   <div className="column is-12">
                     <h3 className="has-text-weight-semibold is-size-2">予約</h3>
-                    <iframe
+                    {/* <iframe
                       className="min-h-[500px] border-0"
                       src="https://squareup.com/appointments/buyer/widget/etln4ovuhmaj84/L683242F5A56N"
                       width="100%"
                       height="100%"
-                    ></iframe>
+                    ></iframe> */}
+                    <Button
+                      className="my-8 w-full min-h-[64px] text-sm font-bold text-primary bg-white rounded-md border-2 border-primary flex items-center justify-center"
+                      href="/restaurant"
+                    >
+                      予約する
+                    </Button>
                   </div>
                   <div className="column is-12">
                     <h3 className="has-text-weight-semibold is-size-2">
                       お客様からの口コミ
                     </h3>
-                    <Typography className="mb-6 inline-block">
+                    <Typography className="inline-block mb-6">
                       総合評価:
                     </Typography>
                     <Rate
@@ -122,7 +128,7 @@ const IndexPage = ({ blogs, result }) => {
                                     </Typography>
                                   </a>
                                 </Link>
-                                <Typography className="text-gray-500 ml-6">
+                                <Typography className="ml-6 text-gray-500">
                                   {review.relative_time_description}
                                 </Typography>
                                 <Rate

@@ -44,6 +44,7 @@ module.exports = {
       colors: {
         primary: "#d64000",
         secondary: "#ead808",
+        line: "#00ba00",
         // color: withOpacity("--color-primary"),
       },
       extend: {},
