@@ -190,7 +190,7 @@ export const showHttpError = (error) => {
       if (typeof window !== "undefined") window.alert(errmsg);
       store.dispatch(setLineUser(null));
       import("@line/liff").then((liff) => {
-        liff.logout();
+        liff.default.logout();
       });
       if (typeof window !== "undefined")
         router.push(`https://liff.line.me/${liffId}`);
