@@ -44,12 +44,12 @@ export const openMapApp = (latitude, longitude, zoom, markered = true) => {
   }
   import("@line/liff").then((liff) => {
     if (isIOS) {
-      liff.openWindow({
+      liff.default.openWindow({
         url: `https://maps.apple.com/maps?${params}`,
         external: true,
       });
     } else if (isAndroid) {
-      liff.openWindow({
+      liff.default.openWindow({
         url: `https://maps.google.com/maps?${params}`,
         external: true,
       });
