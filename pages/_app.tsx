@@ -19,10 +19,14 @@ import {
 import { PersistGate } from "redux-persist/integration/react";
 import Head from "next/head";
 
-const liffId = process.env.NEXT_PUBLIC_LIFF_ID_3;
-
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
+  const liffId =
+    process.env.NODE_ENV === "development"
+      ? process.env.NEXT_PUBLIC_LIFF_ID_3
+      : router.pathname === "/restaurant/delete"
+      ? process.env.NEXT_PUBLIC_LIFF_ID_DELETE
+      : process.env.NEXT_PUBLIC_LIFF_ID;
   // const store = useStore();
   const { lineUser, t } = store.getState();
   const [message, setMessage] = useState({ LIFF_INITED: false });
