@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "set NODE_ENV=development&&next dev",
-    "test": "set NODE_ENV=development&&node ./server.mjs",
+    "dev": "next dev",
+    "test": "node ./server.mjs",
     "test:https": "set HTTPS=true&&node ./server.mjs",
     "build": "next build",
     "start": "next start",

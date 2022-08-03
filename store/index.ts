@@ -138,15 +138,6 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-// export const makeStore = () => {
-//   store.persistor = persistStore(store);
-//   return store;
-// };
-// export const store =
-
-// export const persistor = persistStore(store);
-
-// export const wrapper = createWrapper(makeStore, { debug: true });
 
 export const selectors = {
   axiosError(state) {

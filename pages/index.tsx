@@ -64,6 +64,17 @@ const IndexPage = ({ blogs, result }) => {
                       </h3>
                     </div>
                   </div>
+                  <div className="column is-12 my-vw-16">
+                    <h3 className="has-text-weight-semibold is-size-2 ">
+                      予約
+                    </h3>
+                    <Button
+                      className="my-8 w-full min-h-[64px] text-sm font-bold text-primary bg-white rounded-md border-2 border-primary flex items-center justify-center"
+                      href="/restaurant"
+                    >
+                      予約する
+                    </Button>
+                  </div>
                   <div className="columns">
                     <div className="column is-12">
                       <h3 className="font-bold text-primary has-text-weight-semibold is-size-2">
@@ -83,21 +94,7 @@ const IndexPage = ({ blogs, result }) => {
                       </Link>
                     </div>
                   </div>
-                  <div className="column is-12">
-                    <h3 className="has-text-weight-semibold is-size-2">予約</h3>
-                    {/* <iframe
-                      className="min-h-[500px] border-0"
-                      src="https://squareup.com/appointments/buyer/widget/etln4ovuhmaj84/L683242F5A56N"
-                      width="100%"
-                      height="100%"
-                    ></iframe> */}
-                    <Button
-                      className="my-8 w-full min-h-[64px] text-sm font-bold text-primary bg-white rounded-md border-2 border-primary flex items-center justify-center"
-                      href="/restaurant"
-                    >
-                      予約する
-                    </Button>
-                  </div>
+
                   <div className="column is-12">
                     <h3 className="has-text-weight-semibold is-size-2">
                       お客様からの口コミ
@@ -173,9 +170,9 @@ export const getStaticProps = async () => {
   const data = await client.get({ endpoint: "blogs" });
   const result = await axios
     .get(
-      "https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=ChIJD3OsNGDxGGAR-ZP3DqsU1DE&key=AIzaSyCPCjFkyaxs--NYunGqICEOpQ39FgoRkMA"
+      "https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=ChIJD3OsNGDxGGAR-ZP3DqsU1DE&key=${process.env.GOOGLE_API_KEY}"
     )
-    .then((result) => result.data.result)
+    .then((result) => result.data?.result)
     .catch((err) => err);
   return {
     props: {

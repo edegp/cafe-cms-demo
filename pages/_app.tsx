@@ -22,12 +22,14 @@ import Head from "next/head";
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const liffId =
-    process.env.NODE_ENV === "development"
-      ? process.env.NEXT_PUBLIC_LIFF_ID_3
+    process.env.NODE_ENV === "production"
+      ? router.pathname === "/restaurant/delete"
+        ? process.env.NEXT_PUBLIC_LIFF_ID_DELETE
+        : process.env.NEXT_PUBLIC_LIFF_ID
       : router.pathname === "/restaurant/delete"
-      ? process.env.NEXT_PUBLIC_LIFF_ID_DELETE
-      : process.env.NEXT_PUBLIC_LIFF_ID;
-  // const store = useStore();
+      ? process.env.NEXT_PUBLIC_LIFF_ID_DELETE_DEV
+      : process.env.NEXT_PUBLIC_LIFF_ID_DEV;
+
   const { lineUser, t } = store.getState();
   const [message, setMessage] = useState({ LIFF_INITED: false });
   useEffect(() => {
@@ -71,11 +73,12 @@ function MyApp({ Component, pageProps }) {
             }
             store.dispatch(setT(router.locale));
             // LIFF Initialize
-            // liff.use(new LiffMockPlugin());
+            const MOCK = Boolean(process.env.MOCK === "true");
+            MOCK ?? liff.use(new LiffMockPlugin());
             liff
               .init({
                 liffId,
-                // mock: true,
+                mock: MOCK,
               })
               .then(() => {
                 store.dispatch(setFlash({ LIFF_INITED: true }));
@@ -98,18 +101,13 @@ function MyApp({ Component, pageProps }) {
       <>
         {/* <React.StrictMode> */}
         <Head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `  (function(d) {
-    var config = {
-      kitId: 'hcn3pwq',
-      scriptTimeout: 3000,
-      async: true
-    },
-    h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-  })(document);`,
-            }}
-          />
+          {process.env.FONT_SCTIPT && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `${process.env.FONT_SCTIPT}`,
+              }}
+            />
+          )}
         </Head>
         <Provider store={store}>
           <PersistGate loading={<div>loading...</div>} persistor={persistor}>
