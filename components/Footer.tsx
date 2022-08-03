@@ -10,17 +10,17 @@ import vimeo from "public/social/vimeo.svg";
 
 function Footer() {
   return (
-    <footer className="footer has-background-black has-text-white-ter">
-      <div className="content has-text-centered">
+    <footer className="footer bg-neutral-800 text-whiteTer">
+      <div className="content text-center">
         <Image
           src={logo}
           alt="Kaldi"
           style={{ width: "14em", height: "10em" }}
         />
       </div>
-      <div className="content has-text-centered has-background-black has-text-white-ter">
-        <div className="container has-background-black has-text-white-ter">
-          <div style={{ maxWidth: "100vw" }} className="columns">
+      <div className="content bg-neutral-800 text-center text-whiteTer">
+        <div className="container bg-neutral-800 text-whiteTer">
+          <div className="max-w-screen grid grid-cols-3">
             <div className="column is-4">
               <section className="menu">
                 <ul className="menu-list">
@@ -73,7 +73,7 @@ function Footer() {
                 </ul>
               </section>
             </div>
-            <div className="column is-4 social">
+            <div className="flex place-content-between align-middle">
               <a title="facebook" href="https://facebook.com">
                 <Image
                   src={facebook}

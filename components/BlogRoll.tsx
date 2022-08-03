@@ -20,10 +20,10 @@ import Link from "next/link";
 // };
 export default function BlogRoll({ blogs }) {
   return (
-    <div className="columns is-multiline">
+    <div className="grid grid-cols-2 gap-6">
       {blogs &&
         blogs.map((blog) => (
-          <div className="is-parent column is-6" key={blog.id}>
+          <div className="" key={blog.id}>
             <article
               className="blog-list-item tile is-child box notification"
               //  ${
@@ -33,7 +33,7 @@ export default function BlogRoll({ blogs }) {
               <header>
                 {blog.eyecatch ? (
                   <div className="featured-thumbnail h-full">
-                    <div className="first:rounded-sm max-w-[120px] w-full first:overflow-hidden min-w-[40px]">
+                    <div className="w-full min-w-[40px] max-w-[120px] first:overflow-hidden first:rounded-sm">
                       <Image
                         src={blog.eyecatch.url}
                         width={blog.eyecatch.width}
@@ -45,12 +45,10 @@ export default function BlogRoll({ blogs }) {
                 ) : null}
                 <p className="post-meta">
                   <Link href={`/blog/${blog.id}`}>
-                    <a className="title has-text-primary text-sm">
-                      {blog.title}
-                    </a>
+                    <a className="title text-sm text-primary">{blog.title}</a>
                   </Link>
                   <br />
-                  <span className="subtitle is-block text-xs">
+                  <span className="subtitle block text-xs">
                     {blog.publishedAt
                       ?.split("T")[0]
                       .split("-")

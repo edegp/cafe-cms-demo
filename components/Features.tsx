@@ -3,12 +3,12 @@ import * as React from "react";
 import Image from "next/image";
 
 const FeatureGrid = ({ gridItems }) => (
-  <div className="columns is-multiline">
+  <div className="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-4">
     {gridItems.map((item) => (
-      <div key={item.text} className="column is-6">
+      <div key={item.text}>
         <section className="section">
-          <div className="has-text-centered">
-            <div className="w-[240px] inline-block">
+          <div className="text-center">
+            <div className="inline-block w-[240px]">
               <Image
                 alt={item.text}
                 src={item.image}

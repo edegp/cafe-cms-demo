@@ -9,7 +9,6 @@ const _stage = `/${process.env.NEXT_PUBLIC_APIGATEWAY_STAGE}`;
 const { locale } = store.getState();
 
 Amplify.configure({
-  Auth: { region: "ap-northeast-1" },
   API: {
     endpoints: [
       {

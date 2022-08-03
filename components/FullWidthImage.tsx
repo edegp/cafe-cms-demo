@@ -1,6 +1,5 @@
 /* eslint-disable tailwindcss/no-custom-classname */
 import React from "react";
-import Image from "next/image";
 
 export default function FullWidthImage(props) {
   const {
@@ -29,7 +28,7 @@ export default function FullWidthImage(props) {
         <div className="flex flex-col justify-around h-[150px] leading-4 algin-start">
           {title && (
             <h1
-              className="has-text-weight-bold is-size-3-mobile is-size-2-tablet is-size-1-widescreen"
+              className="text-bold text-3xl tablet:text-2xl laptop:text-xl"
               style={{
                 boxShadow:
                   "rgb(255, 68, 0) 0.5rem 0px 0px, rgb(255, 68, 0) -0.5rem 0px 0px",

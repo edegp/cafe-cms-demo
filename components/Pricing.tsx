@@ -2,17 +2,15 @@
 import * as React from "react";
 
 const Pricing = ({ data }) => (
-  <div className="columns">
+  <div className="grid grid-cols-1 tablet:grid-cols-3">
     {data.map((price) => (
       <div key={price.plan} className="column">
         <section className="section">
-          <h4 className="has-text-centered has-text-weight-semibold">
-            {price.plan}
-          </h4>
-          <h2 className="is-size-1 has-text-weight-bold has-text-primary has-text-centered">
+          <h4 className="text-center text-semibold">{price.plan}</h4>
+          <h2 className="text-xl text-center text-primary text-bold">
             ${price.price}
           </h2>
-          <p className="has-text-weight-semibold">{price.description}</p>
+          <p className="text-semibold">{price.description}</p>
           <ul>
             {price.items.map((item) => (
               <li key={item} className="text-xs">

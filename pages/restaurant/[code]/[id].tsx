@@ -428,9 +428,6 @@ export default function Idex(props: {
                       className="text-[28px]"
                     />
                   </div>
-                  {/* <Button className="mt-vw-2 bg-yellow-500 ">
-                    {t.calendar.vacant_little}
-                  </Button> */}
                 </>
               ) : status === 1 ? (
                 <>
@@ -440,12 +437,6 @@ export default function Idex(props: {
                       className="text-[28px]"
                     />
                   </div>
-                  {/* <Button
-                    className="px-2 mt-vw-2 w-8 tracking-[24px] text-center text-black rounded-full tablet:w-12 tablet:tracking-wide"
-                    type="link"
-                  >
-                    {t.calendar.vacancy}
-                  </Button> */}
                 </>
               ) : (
                 <Button type="link" danger>

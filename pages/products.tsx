@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import React from "react";
 import Image from "next/image";
 import Layout from "components/Layout";
@@ -68,9 +69,9 @@ const ProductPage = ({ data }) => {
         <section className="section section--gradient">
           <div className="container">
             <div className="section">
-              <div className="columns">
-                <div className="column is-7 is-offset-1">
-                  <h3 className="has-text-weight-semibold is-size-2">
+              <div className="grid">
+                <div className="basis-7/12">
+                  <h3 className="text-xl font-semibold">
                     良心とともに素晴らしいコーヒーを
                   </h3>
                   <p>
@@ -79,12 +80,12 @@ const ProductPage = ({ data }) => {
                   </p>
                 </div>
               </div>
-              <div className="columns">
-                <div className="column is-10 is-offset-1">
+              <div className="grid">
+                <div className="column basis-10/12">
                   <Features gridItems={blurbs} />
-                  <div className="columns">
+                  <div className="columns flex flex-row">
                     <div className="column is-7">
-                      <h3 className="has-text-weight-semibold is-size-3">
+                      <h3 className="text-3xl font-semibold">
                         妥協のないすぐれたコーヒー
                       </h3>
                       <p>
@@ -94,41 +95,38 @@ const ProductPage = ({ data }) => {
                       </p>
                     </div>
                   </div>
-                  <div className="tile is-ancestor">
-                    <div className="tile is-vertical">
-                      <div className="tile">
-                        <div className="tile is-parent is-vertical">
-                          <article className="tile is-child overflow-hidden rounded-lg">
-                            <Image
-                              alt="プロダクト1"
-                              quality={80}
-                              src={Main1}
-                              layout="responsive"
-                              objectFit="cover"
-                            />
-                          </article>
-                        </div>
-                        <div className="tile is-parent ">
-                          <article className="tile is-child overflow-hidden rounded-lg">
-                            <Image
-                              alt="プロダクト2"
-                              src={Main2}
-                              layout="responsive"
-                              objectFit="cover"
-                            />
-                          </article>
-                        </div>
-                      </div>
-                      <div className="tile is-parent">
-                        <article className="tile is-child overflow-hidden rounded-lg">
-                          <Image
-                            alt="プロダクト3"
-                            src={Main3}
-                            layout="responsive"
-                            objectFit="cover"
-                          />
-                        </article>
-                      </div>
+                  <div className="grid grid-rows-3 gap-6">
+                    <article className=" col-span-1 row-span-1 overflow-hidden rounded-lg">
+                      <Image
+                        alt="プロダクト1"
+                        quality={80}
+                        src={Main1}
+                        width="996px"
+                        height="661px"
+                        layout="responsive"
+                        objectFit="cover"
+                      />
+                    </article>
+                    <article className=" col-span-1 row-span-1 overflow-hidden rounded-lg">
+                      <Image
+                        alt="プロダクト2"
+                        src={Main2}
+                        width="996px"
+                        height="661px"
+                        layout="responsive"
+                        objectFit="cover"
+                      />
+                    </article>
+                    <div className=" is-parent col-span-2 row-span-2">
+                      <article className="tile overflow-hidden rounded-lg">
+                        <Image
+                          alt="プロダクト3"
+                          src={Main3}
+                          width="996px"
+                          height="661px"
+                          objectFit="cover"
+                        />
+                      </article>
                     </div>
                   </div>
                   <Testimonials
@@ -147,9 +145,7 @@ const ProductPage = ({ data }) => {
                     ]}
                   />
                   <FullWidthImage img={fullImage} imgPosition={"bottom"} />
-                  <h2 className="has-text-weight-semibold is-size-2">
-                    サブスクリプション
-                  </h2>
+                  <h2 className="text-2xl font-semibold">サブスクリプション</h2>
                   <p className="text-sm">
                     私たちはあなたの人生の一部として素晴らしいコーヒーを作るのを簡単にします。
                     毎月のサブスクリプションプランの1つを選択して、毎月玄関先でおいしいコーヒーを受け取ります。
@@ -165,8 +161,8 @@ const ProductPage = ({ data }) => {
         {/* <section className="section section--gradient">
           <div className="container">
             <div className="section">
-              <div className="columns">
-                <div className="column is-10 is-offset-1"></div>
+              <div className="columns flex flex-row ">
+                <div className="column is-10"></div>
               </div>
             </div>
           </div>

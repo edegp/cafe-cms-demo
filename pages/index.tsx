@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import axios from "axios";
@@ -45,15 +46,15 @@ const IndexPage = ({ blogs, result }) => {
         subheading={subheading}
         bgAttachment="fixed"
       />
-      <section className="section section--gradient">
+      <section className="section section--gradient ">
         <div className="container">
           <div className="section">
-            <div className="columns">
-              <div className="column is-10 is-offset-1">
+            <div className="columns-1 flex flex-row columns">
+              <div className="basis-10/12 ml-8">
                 <div className="content">
                   <div className="content">
                     <div className="tile">
-                      <h1 className="font-black text-primary title">
+                      <h1 className="font-black text-primary title break-[wordbreak]">
                         なぜ、カルディなのか
                       </h1>
                     </div>
@@ -64,20 +65,20 @@ const IndexPage = ({ blogs, result }) => {
                       </h3>
                     </div>
                   </div>
-                  <div className="column is-12 my-vw-16">
+                  <div className="basis-full my-vw-16">
                     <h3 className="has-text-weight-semibold is-size-2 ">
                       予約
                     </h3>
                     <Button
-                      className="my-8 w-full min-h-[64px] text-sm font-bold text-primary bg-white rounded-md border-2 border-primary flex items-center justify-center"
+                      className="flex justify-center items-center my-8 w-full min-h-[64px] text-sm font-bold text-primary bg-white rounded-md border-2 border-primary"
                       href="/restaurant"
                     >
                       予約する
                     </Button>
                   </div>
                   <div className="columns">
-                    <div className="column is-12">
-                      <h3 className="font-bold text-primary has-text-weight-semibold is-size-2">
+                    <div className="basis-full">
+                      <h3 className="text-3xl font-bold text-primary">
                         良心とともに素晴らしいコーヒーを
                       </h3>
                       <p>
@@ -88,15 +89,15 @@ const IndexPage = ({ blogs, result }) => {
                   </div>
                   <Features gridItems={blurbs} />
                   <div className="columns">
-                    <div className="column is-12 has-text-centered">
+                    <div className="basis-full text-center">
                       <Link href="/products">
                         <a className="btn">すべての商品を見る</a>
                       </Link>
                     </div>
                   </div>
 
-                  <div className="column is-12">
-                    <h3 className="has-text-weight-semibold is-size-2">
+                  <div className="basis-full">
+                    <h3 className="text-3xl font-semibold">
                       お客様からの口コミ
                     </h3>
                     <Typography className="inline-block mb-6">
@@ -116,7 +117,7 @@ const IndexPage = ({ blogs, result }) => {
                         return (
                           <Col key={index} md={24} lg={12} xl={8}>
                             <Card hoverable className="min-h-[300px]">
-                              <div className="grid grid-rows-12">
+                              <div className="grid">
                                 <Link href={review.author_url}>
                                   <a>
                                     <Avatar src={review.profile_photo_url} />
@@ -133,7 +134,7 @@ const IndexPage = ({ blogs, result }) => {
                                   disabled
                                   defaultValue={review.rating}
                                 />
-                                <Typography className="self-center row-span-8">
+                                <Typography className="row-span-6 self-center">
                                   {review.text}
                                 </Typography>
                               </div>
@@ -143,12 +144,10 @@ const IndexPage = ({ blogs, result }) => {
                       })}
                     </Row>
                   </div>
-                  <div className="column is-12">
-                    <h3 className="has-text-weight-semibold is-size-2">
-                      最近の投稿
-                    </h3>
+                  <div className="basis-full">
+                    <h3 className="text-3xl font-semibold">最近の投稿</h3>
                     <BlogRoll blogs={blogs} />
-                    <div className="column is-12 has-text-centered">
+                    <div className="basis-full text-center column">
                       <Link className="btn" href="/blog">
                         もっと読む
                       </Link>

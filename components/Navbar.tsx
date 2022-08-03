@@ -7,14 +7,12 @@ import logo from "public/img/logo.svg";
 
 function Navbar() {
   const [active, setActive] = useState(false);
-  const [navBarActiveClass, setNavBarActiveClass] = useState("");
   const toggleHamburger = () => {
     setActive(!active);
-    active ? setNavBarActiveClass("is-active") : setNavBarActiveClass("");
   };
   return (
     <nav
-      className="navbar is-transparent"
+      className="navbar bg-transparent top-1"
       role="navigation"
       aria-label="main-navigation"
     >
@@ -25,7 +23,9 @@ function Navbar() {
           </Link>
           {/* Hamburger menu */}
           <div
-            className={`navbar-burger burger ${navBarActiveClass}`}
+            className={`navbar-burger burger laptop:hidden ${
+              active ? "is-active" : ""
+            }`}
             data-target="navMenu"
             role="menuitem"
             tabIndex={0}
@@ -37,8 +37,13 @@ function Navbar() {
             <span />
           </div>
         </div>
-        <div id="navMenu" className={`navbar-menu ${navBarActiveClass}`}>
-          <div className="navbar-start has-text-centered">
+        <div
+          id="navMenu"
+          className={`navbar-menu shrink-0 grow laptop:flex ${
+            active ? "block" : "hidden"
+          }`}
+        >
+          <div className="algin-items-center mr-auto mb-0 block justify-start text-center laptop:flex">
             <Link href="/about">
               <a className="navbar-item">About</a>
             </Link>
@@ -55,7 +60,7 @@ function Navbar() {
               <a className="navbar-item">Form Examples</a>
             </Link>
           </div>
-          <div className="navbar-end has-text-centered">
+          <div className="ml-auto justify-self-end text-center">
             <a
               className="navbar-item"
               href="https://github.com/netlify-templates/gatsby-starter-netlify-cms"
