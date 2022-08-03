@@ -43,6 +43,7 @@ import {
   LoadingOutlined,
 } from "@ant-design/icons";
 import SwiperCore from "swiper";
+import Head from "next/head";
 
 export default function Idex(props: {
   statuses: any;
@@ -399,7 +400,7 @@ export default function Idex(props: {
       return (
         <>
           <div
-            className={`h-[9vw] min-h-[82px] text-center mb-1 ${
+            className={`mb-1 h-[9vw] min-h-[82px] text-center ${
               valueMonth === curMonth &&
               value > moment(minDate) &&
               value < moment(maxDate)
@@ -462,303 +463,316 @@ export default function Idex(props: {
   );
 
   return (
-    <Layout className="z-0 bg-white">
-      <Layout.Content>
-        <AntdCalendar
-          dateFullCellRender={dateFullCellRender}
-          headerRender={headerRendar}
-          locale={newLocale}
-          defaultValue={moment()}
-          validRange={[moment(minDate), moment(maxDate)]}
-          onChange={calendarChange}
-          className="mx-vw-10"
+    <>
+      <Head>
+        <title>
+          {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
+        </title>
+
+        <meta
+          property="og:title"
+          content={`${reserveDate} ${restaurant.name}&nbsp;&nbsp;${t.calendar.msg001}`}
         />
-        <Spin
-          spinning={loading}
-          className="top-[-250px] z-50 text-primary"
-          indicator={
-            <LoadingOutlined className="font-[36px] text-primary" spin />
-          }
-          size="large"
-          tip="送信中"
-        >
-          <Drawer
-            zIndex={10}
-            visible={Boolean(reserveDate)}
-            onClose={handleClese}
-            width={"100%"}
-            height={"100vh"}
-            placement="bottom"
+      </Head>
+      <Layout className="z-0 bg-white">
+        <Layout.Content>
+          <AntdCalendar
+            dateFullCellRender={dateFullCellRender}
+            headerRender={headerRendar}
+            locale={newLocale}
+            defaultValue={moment()}
+            validRange={[moment(minDate), moment(maxDate)]}
+            onChange={calendarChange}
+            className="mx-vw-10"
+          />
+          <Spin
+            spinning={loading}
+            className="z-50 m-auto text-primary"
+            indicator={
+              <LoadingOutlined className="font-[36px] text-primary" spin />
+            }
+            size="large"
+            tip="送信中"
+          >
+            <Drawer
+              visible={Boolean(reserveDate)}
+              onClose={handleClese}
+              width={"100%"}
+              height={"100vh"}
+              placement="bottom"
+              className="z-30"
+            >
+              <Typography>
+                {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
+              </Typography>
+              <Swiper
+                onInit={(core: SwiperCore) => {
+                  swiperRef.current = core.el;
+                }}
+                loop={true}
+                slidesPerView={1}
+                onSlideNextTransitionStart={handleSlideNext}
+                onSlidePrevTransitionStart={handleSlidePrev}
+              >
+                <SwiperSlide>
+                  <div className="h-[90vh]">
+                    <Calendar
+                      events={events.map((event, index) => ({
+                        id: index,
+                        title: event.name,
+                        start: new Date(event.start),
+                        end: new Date(event.end),
+                      }))}
+                      step={30}
+                      views={["day"]}
+                      defaultView="day"
+                      localizer={localizer}
+                      timeslots={2}
+                      date={new Date(reserveDate)}
+                      onNavigate={handleNavigate}
+                      min={
+                        new Date(
+                          minDate.slice(0, 4),
+                          minDate.slice(4, 6),
+                          minDate.slice(6, 8),
+                          9,
+                          0,
+                          0
+                        )
+                      }
+                      max={new Date(0, 0, 0, 23, 0, 0)}
+                      eventPropGetter={() => ({
+                        className:
+                          "odd:bg-slate-400 even:bg-primary  border-white pl-vw-36 align-items-center space-between opacity-80",
+                      })}
+                      onSelectEvent={handleSelectEvent}
+                      formats={{
+                        dayHeaderFormat: (
+                          date: any,
+                          culture: any,
+                          localizer: {
+                            format: (arg0: any, arg1: string, arg2: any) => any;
+                          }
+                        ) =>
+                          localizer.format(date, "M[月] D[日] dddd", culture),
+                      }}
+                    />
+                  </div>
+                </SwiperSlide>
+                <SwiperSlide>
+                  <div className="h-[90vh]">
+                    <Calendar
+                      events={events.map((event, index) => ({
+                        id: index,
+                        title: event.name,
+                        start: new Date(event.start),
+                        end: new Date(event.end),
+                      }))}
+                      step={30}
+                      views={["day"]}
+                      defaultView="day"
+                      localizer={localizer}
+                      timeslots={2}
+                      date={new Date(reserveDate)}
+                      onNavigate={handleNavigate}
+                      min={
+                        new Date(
+                          parseInt(minDate.slice(0, 4), 10),
+                          parseInt(minDate.slice(4, 6), 10),
+                          parseInt(minDate.slice(6, 8), 10),
+                          9,
+                          0,
+                          0
+                        )
+                      }
+                      max={new Date(0, 0, 0, 23, 0, 0)}
+                      eventPropGetter={() => ({
+                        className:
+                          "even:bg-slate-400 odd:bg-primary border-white pl-vw-36 align-items-center space-between opacity-80",
+                      })}
+                      onSelectEvent={handleSelectEvent}
+                      formats={{
+                        dayHeaderFormat: (
+                          date: any,
+                          culture: any,
+                          localizer: {
+                            format: (arg0: any, arg1: string, arg2: any) => any;
+                          }
+                        ) =>
+                          localizer.format(date, "M[月] D[日] dddd", culture),
+                      }}
+                    />
+                  </div>
+                </SwiperSlide>
+              </Swiper>
+            </Drawer>
+            <Modal
+              zIndex={30}
+              visible={reserveDialog}
+              closable={true}
+              maskClosable={true}
+              onCancel={handleCancel}
+              footer={null}
+            >
+              <Form
+                form={form}
+                requiredMark={"optional"}
+                layout="vertical"
+                onFinish={reserve}
+                onFinishFailed={handleFinishFailed}
+                className="mt-6"
+                // onValuesChange={(changeValue) => {}}
+              >
+                <Form.Item
+                  name="day"
+                  hidden
+                  rules={[{ required: true, message: "必須項目です" }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name="start"
+                  label="開始時刻"
+                  rules={[{ required: true, message: "必須項目です" }]}
+                >
+                  <Select
+                    onChange={useCallback(
+                      (value) =>
+                        changeCourse(value, form.getFieldValue("course")),
+                      [changeCourse, form]
+                    )}
+                  >
+                    {events.map((event) => {
+                      const startTime = moment(event.start).format("HH:mm");
+                      return (
+                        <Select.Option key={event.id} value={startTime}>
+                          {startTime}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name="end"
+                  label="終了時刻"
+                  rules={[
+                    { required: true, message: "必須項目です" },
+                    {
+                      validator: (_, value) => {
+                        if (value < form.getFieldValue("start")) {
+                          return Promise.reject(
+                            new Error("終了時刻 が 開始時刻 以前になっています")
+                          );
+                        } else {
+                          return Promise.resolve();
+                        }
+                      },
+                    },
+                  ]}
+                >
+                  <Select disabled={endtimeDisabled}>
+                    {events.map((event) => {
+                      const endTime = moment(event.end).format("HH:mm");
+                      return (
+                        <Select.Option key={event.id} value={endTime}>
+                          {endTime}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  label="人数"
+                  name="people"
+                  rules={[{ required: true, message: "必須項目です" }]}
+                  initialValue={1}
+                >
+                  <InputNumber min={1} max={150} />
+                </Form.Item>
+                <Form.Item name="course" label="コース">
+                  <Select onChange={handleCourseChange}>
+                    {course.map(
+                      (c: {
+                        id: React.Key;
+                        name:
+                          | string
+                          | number
+                          | boolean
+                          | React.ReactElement<
+                              any,
+                              string | React.JSXElementConstructor<any>
+                            >
+                          | React.ReactFragment
+                          | React.ReactPortal;
+                        price:
+                          | string
+                          | number
+                          | boolean
+                          | React.ReactElement<
+                              any,
+                              string | React.JSXElementConstructor<any>
+                            >
+                          | React.ReactFragment
+                          | React.ReactPortal;
+                      }) => (
+                        <Select.Option key={c.id} value={c.id}>
+                          {c.name}（税込 {c.price}円）
+                        </Select.Option>
+                      )
+                    )}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  shouldUpdate={(prevValues, curValues) =>
+                    prevValues.course !== curValues.course
+                  }
+                >
+                  {({ getFieldValue }) =>
+                    getFieldValue("course") > 0 && (
+                      <pre>{course[getFieldValue("course")]?.comment}</pre>
+                    )
+                  }
+                </Form.Item>
+                <Form.Item className="w-full">
+                  <Button
+                    key="submit"
+                    type="primary"
+                    htmlType="submit"
+                    className="absolute bottom-0 w-full rounded-sm border-primary bg-primary"
+                  >
+                    予約する
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Modal>
+          </Spin>
+          <Modal
+            visible={Boolean(errorDialogMessage.title)}
+            onCancel={handleErrorModalClick}
+            onOk={handleErrorModalClick}
           >
             <Typography>
-              {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
+              <span>{errorDialogMessage.title}</span>
             </Typography>
-            <Swiper
-              // ref={swiperRef}
-              onInit={(core: SwiperCore) => {
-                swiperRef.current = core.el;
-              }}
-              loop={true}
-              slidesPerView={1}
-              onSlideNextTransitionStart={handleSlideNext}
-              onSlidePrevTransitionStart={handleSlidePrev}
-            >
-              <SwiperSlide>
-                <div className="h-[90vh]">
-                  <Calendar
-                    events={events.map((event, index) => ({
-                      id: index,
-                      title: event.name,
-                      start: new Date(event.start),
-                      end: new Date(event.end),
-                    }))}
-                    step={30}
-                    views={["day"]}
-                    defaultView="day"
-                    localizer={localizer}
-                    timeslots={2}
-                    date={new Date(reserveDate)}
-                    onNavigate={handleNavigate}
-                    min={
-                      new Date(
-                        minDate.slice(0, 4),
-                        minDate.slice(4, 6),
-                        minDate.slice(6, 8),
-                        9,
-                        0,
-                        0
-                      )
-                    }
-                    max={new Date(0, 0, 0, 23, 0, 0)}
-                    eventPropGetter={() => ({
-                      className:
-                        "odd:bg-slate-400 even:bg-primary  border-white pl-vw-36 align-items-center space-between opacity-80",
-                    })}
-                    onSelectEvent={handleSelectEvent}
-                    formats={{
-                      dayHeaderFormat: (
-                        date: any,
-                        culture: any,
-                        localizer: {
-                          format: (arg0: any, arg1: string, arg2: any) => any;
-                        }
-                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
-                    }}
-                  />
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className="h-[90vh]">
-                  <Calendar
-                    events={events.map((event, index) => ({
-                      id: index,
-                      title: event.name,
-                      start: new Date(event.start),
-                      end: new Date(event.end),
-                    }))}
-                    step={30}
-                    views={["day"]}
-                    defaultView="day"
-                    localizer={localizer}
-                    timeslots={2}
-                    date={new Date(reserveDate)}
-                    onNavigate={handleNavigate}
-                    min={
-                      new Date(
-                        parseInt(minDate.slice(0, 4), 10),
-                        parseInt(minDate.slice(4, 6), 10),
-                        parseInt(minDate.slice(6, 8), 10),
-                        9,
-                        0,
-                        0
-                      )
-                    }
-                    max={new Date(0, 0, 0, 23, 0, 0)}
-                    eventPropGetter={() => ({
-                      className:
-                        "even:bg-slate-400 odd:bg-primary border-white pl-vw-36 align-items-center space-between opacity-80",
-                    })}
-                    onSelectEvent={handleSelectEvent}
-                    formats={{
-                      dayHeaderFormat: (
-                        date: any,
-                        culture: any,
-                        localizer: {
-                          format: (arg0: any, arg1: string, arg2: any) => any;
-                        }
-                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
-                    }}
-                  />
-                </div>
-              </SwiperSlide>
-            </Swiper>
-          </Drawer>
-          <Modal
-            zIndex={20}
-            visible={reserveDialog}
-            closable={true}
-            maskClosable={true}
-            onCancel={handleCancel}
-            footer={null}
-          >
-            <Form
-              form={form}
-              requiredMark={"optional"}
-              layout="vertical"
-              onFinish={reserve}
-              onFinishFailed={handleFinishFailed}
-              className="mt-6"
-              // onValuesChange={(changeValue) => {}}
-            >
-              <Form.Item
-                name="day"
-                hidden
-                rules={[{ required: true, message: "必須項目です" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="start"
-                label="開始時刻"
-                rules={[{ required: true, message: "必須項目です" }]}
-              >
-                <Select
-                  onChange={useCallback(
-                    (value) =>
-                      changeCourse(value, form.getFieldValue("course")),
-                    [changeCourse, form]
-                  )}
-                >
-                  {events.map((event) => {
-                    const startTime = moment(event.start).format("HH:mm");
-                    return (
-                      <Select.Option key={event.id} value={startTime}>
-                        {startTime}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="end"
-                label="終了時刻"
-                rules={[
-                  { required: true, message: "必須項目です" },
-                  {
-                    validator: (_, value) => {
-                      if (value < form.getFieldValue("start")) {
-                        return Promise.reject(
-                          new Error("終了時刻 が 開始時刻 以前になっています")
-                        );
-                      } else {
-                        return Promise.resolve();
-                      }
-                    },
-                  },
-                ]}
-              >
-                <Select disabled={endtimeDisabled}>
-                  {events.map((event) => {
-                    const endTime = moment(event.end).format("HH:mm");
-                    return (
-                      <Select.Option key={event.id} value={endTime}>
-                        {endTime}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="人数"
-                name="people"
-                rules={[{ required: true, message: "必須項目です" }]}
-                initialValue={1}
-              >
-                <InputNumber min={1} max={150} />
-              </Form.Item>
-              <Form.Item name="course" label="コース">
-                <Select onChange={handleCourseChange}>
-                  {course.map(
-                    (c: {
-                      id: React.Key;
-                      name:
-                        | string
-                        | number
-                        | boolean
-                        | React.ReactElement<
-                            any,
-                            string | React.JSXElementConstructor<any>
-                          >
-                        | React.ReactFragment
-                        | React.ReactPortal;
-                      price:
-                        | string
-                        | number
-                        | boolean
-                        | React.ReactElement<
-                            any,
-                            string | React.JSXElementConstructor<any>
-                          >
-                        | React.ReactFragment
-                        | React.ReactPortal;
-                    }) => (
-                      <Select.Option key={c.id} value={c.id}>
-                        {c.name}（税込 {c.price}円）
-                      </Select.Option>
-                    )
-                  )}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                shouldUpdate={(prevValues, curValues) =>
-                  prevValues.course !== curValues.course
-                }
-              >
-                {({ getFieldValue }) =>
-                  getFieldValue("course") > 0 && (
-                    <pre>{course[getFieldValue("course")]?.comment}</pre>
-                  )
-                }
-              </Form.Item>
-              <Form.Item className="w-full">
-                <Button
-                  key="submit"
-                  type="primary"
-                  htmlType="submit"
-                  className="absolute bottom-0 w-full bg-primary rounded-sm border-primary"
-                >
-                  予約する
-                </Button>
-              </Form.Item>
-            </Form>
+            <Typography>
+              <span>{errorDialogMessage.text}</span>
+            </Typography>
           </Modal>
-        </Spin>
-        <Modal
-          visible={Boolean(errorDialogMessage.title)}
-          onCancel={handleErrorModalClick}
-          onOk={handleErrorModalClick}
-        >
-          <Typography>
-            <span>{errorDialogMessage.title}</span>
-          </Typography>
-          <Typography>
-            <span>{errorDialogMessage.text}</span>
-          </Typography>
-        </Modal>
-      </Layout.Content>
-      <Footer className="flex bg-white">
-        <Button className="mr-vw-8 text-zinc-600 bg-white border-zinc-600">
-          <Link href="/restaurant" passHref>
-            予約TOPへ
-          </Link>
-        </Button>
-        <Button className="text-zinc-600 bg-white border-zinc-600">
-          <Link href="/restaurant/area" passHref>
-            店舗選択
-          </Link>
-        </Button>
-      </Footer>
-    </Layout>
+        </Layout.Content>
+        <Footer className="flex bg-white">
+          <Button className="mr-vw-8 border-zinc-600 bg-white text-zinc-600">
+            <Link href="/restaurant" passHref>
+              予約TOPへ
+            </Link>
+          </Button>
+          <Button className="border-zinc-600 bg-white text-zinc-600">
+            <Link href="/restaurant/area" passHref>
+              店舗選択
+            </Link>
+          </Button>
+        </Footer>
+      </Layout>
+    </>
   );
 }
 

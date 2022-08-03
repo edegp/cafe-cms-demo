@@ -182,8 +182,6 @@ const liffId = process.env.LIFF_ID;
 export const showHttpError = (error) => {
   if (error.response && error.response.status >= 400) {
     // HTTP 403 Topへ画面遷移
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const router = useRouter();
     if (error.response.status == 403) {
       const { t } = store.getState();
       const errmsg = t.error.msg005;
@@ -193,7 +191,7 @@ export const showHttpError = (error) => {
         liff.default.logout();
       });
       if (typeof window !== "undefined")
-        router.push(`https://liff.line.me/${liffId}`);
+        window.location(`https://liff.line.me/${liffId}`);
       return true;
     }
 
