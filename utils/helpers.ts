@@ -191,7 +191,7 @@ export const showHttpError = (error) => {
         liff.default.logout();
       });
       if (typeof window !== "undefined")
-        window.location(`https://liff.line.me/${liffId}`);
+        window.location.assign(`https://liff.line.me/${liffId}`);
       return true;
     }
 

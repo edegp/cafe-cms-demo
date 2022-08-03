@@ -5,6 +5,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "debug.javascript.usePreview": false
-  "pasteImage.path": "${currentFileDir}/public/img",
+  "debug.javascript.usePreview": false,
+  "pasteImage.path": "${currentFileDir}/public/img"
 }
