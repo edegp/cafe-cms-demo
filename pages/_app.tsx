@@ -74,11 +74,15 @@ function MyApp({ Component, pageProps }) {
             store.dispatch(setT(router.locale));
             // LIFF Initialize
             const MOCK = Boolean(process.env.MOCK === "true");
-            MOCK ?? liff.use(new LiffMockPlugin());
+            let mock;
+            if (MOCK) {
+              mock = true;
+              liff.use(new LiffMockPlugin());
+            }
             liff
               .init({
                 liffId,
-                mock: MOCK,
+                mock,
               })
               .then(() => {
                 store.dispatch(setFlash({ LIFF_INITED: true }));

@@ -170,7 +170,7 @@ export const getStaticProps = async () => {
   const data = await client.get({ endpoint: "blogs" });
   const result = await axios
     .get(
-      "https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=ChIJD3OsNGDxGGAR-ZP3DqsU1DE&key=${process.env.GOOGLE_API_KEY}"
+      `https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=ChIJD3OsNGDxGGAR-ZP3DqsU1DE&key=${process.env.GOOGLE_API_KEY}`
     )
     .then((result) => result.data?.result)
     .catch((err) => err);

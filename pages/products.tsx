@@ -100,6 +100,7 @@ const ProductPage = ({ data }) => {
                         <div className="tile is-parent is-vertical">
                           <article className="tile is-child overflow-hidden rounded-lg">
                             <Image
+                              alt="プロダクト1"
                               quality={80}
                               src={Main1}
                               layout="responsive"
@@ -110,6 +111,7 @@ const ProductPage = ({ data }) => {
                         <div className="tile is-parent ">
                           <article className="tile is-child overflow-hidden rounded-lg">
                             <Image
+                              alt="プロダクト2"
                               src={Main2}
                               layout="responsive"
                               objectFit="cover"
@@ -120,6 +122,7 @@ const ProductPage = ({ data }) => {
                       <div className="tile is-parent">
                         <article className="tile is-child overflow-hidden rounded-lg">
                           <Image
+                            alt="プロダクト3"
                             src={Main3}
                             layout="responsive"
                             objectFit="cover"

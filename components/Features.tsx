@@ -10,6 +10,7 @@ const FeatureGrid = ({ gridItems }) => (
           <div className="has-text-centered">
             <div className="w-[240px] inline-block">
               <Image
+                alt={item.text}
                 src={item.image}
                 objectFit="contain"
                 layout="intrinsic"

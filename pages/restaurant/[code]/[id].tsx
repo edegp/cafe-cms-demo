@@ -777,7 +777,7 @@ export const getStaticPaths = async ({ locales }) => {
   const restaurants = data.restaurants;
   const paths = Object.keys(restaurants)
     .map((key) =>
-      restaurants[key].map((restaurant: { id: { toString: () => any } }) => ({
+      restaurants[key].map((restaurant) => ({
         params: { code: key, id: restaurant.id.toString() },
         locale: locales[0],
       }))

@@ -13,9 +13,7 @@ const handle = app.getRequestHandler();
 (async () => {
   await app.prepare();
   const expressApp = express();
-
   expressApp.get("*", (req, res) => handle(req, res));
-
   // Use HTTPS if HTTPS option enabled
   const hasCertificates =
     fs.existsSync("./cert/localhost.key") &&
