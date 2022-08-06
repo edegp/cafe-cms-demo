@@ -1,21 +1,163 @@
 import React from "react";
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  configureStore,
+  createListenerMiddleware,
+  isAnyOf,
+} from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
-import thunk from "redux-thunk";
+import { getLiffProfile } from "utils/liff";
 import ja from "public/locales/ja";
 
-interface state {
-  message?: Object;
+type Message = {
+  no: string;
+  restaurant: string;
+  name: string;
+  course: string;
+  day: string;
+  people: number;
+  start: string;
+  end: string;
+  LIFF_INITED: boolean;
+};
+
+type LineUser = {
+  expire: string;
+  userId: string;
+  name: string;
+  token: string;
+  idToken: string;
+};
+type T = {
+  type: string;
+  language: string;
+  title: string;
+  top: {
+    title: string;
+    msg001: string;
+    msg002: string;
+    msg003: string;
+    msg004: string;
+    msg005: string;
+    msg006: string;
+  };
+  delete: { title: string; msg001: string };
+  areas: {
+    msg001: string;
+    msg002: string;
+    msg003: string;
+    msg004: string;
+    msg005: string;
+    msg006: string;
+    msg007: string;
+  };
+  calendar: {
+    vacant: string;
+    vacant_little: string;
+    full: string;
+    short_vacant: string;
+    short_vacant_little: string;
+    short_full: string;
+    closingday: string;
+    short_closingday: string;
+    vacancy: string;
+    msg001: string;
+    msg002: string;
+    msg003: string;
+    msg004: string;
+    msg005: string;
+    msg006: string;
+    msg007: string;
+    msg008: string;
+    msg009: string;
+    msg010: string;
+    msg011: string;
+    msg012: string;
+    msg013: string;
+    msg014: string;
+    msg015: string;
+    msg016: string;
+    msg017: string;
+  };
+  completed: {
+    msg001: string;
+    msg002: string;
+    msg003: string;
+    msg004: string;
+    msg005: string;
+    msg006: string;
+    msg007: string;
+    msg008: string;
+    msg009: string;
+    msg010: string;
+    msg011: string;
+    msg012: string;
+    msg013: string;
+    yyyymmdd: string;
+  };
+  delete_completed: {
+    msg001: string;
+    msg002: string;
+    msg003: string;
+    msg004: string;
+    msg005: string;
+    msg006: string;
+    msg007: string;
+    msg008: string;
+    msg009: string;
+    msg010: string;
+    msg011: string;
+    msg012: string;
+    msg013: string;
+    yyyymmdd: string;
+  };
+  footer: {
+    shop: string;
+    day: string;
+    selection: string;
+  };
+  utils: {
+    sun: string;
+    mon: string;
+    tue: string;
+    wed: string;
+    thu: string;
+    fri: string;
+    sat: string;
+    hol: string;
+  };
+  restaurant: {
+    yen: string;
+    yyyymm: string;
+    allowed: string;
+    not_allowed: string;
+    no_course: string;
+    vacant: string;
+    vacant_little: string;
+    full: string;
+  };
+  error: {
+    msg001: string;
+    msg002: string;
+    msg003: string;
+    msg004: string;
+    msg005: string;
+  };
+};
+
+type State = {
+  message?: Message;
   started?: string;
-  locales: [];
-  locale: string;
+  locales?: string[];
+  locale?: string;
   sessionId?: string;
-  lineUser?: Object;
+  lineUser?: LineUser;
   restaurant?: Object;
   axiosError?: Object;
-  t?: Object;
-}
+  t?: T;
+  isLoading?: boolean;
+};
 
 const createNoopStorage = () => {
   return {
@@ -40,23 +182,26 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  // blacklist: ['counter'] // What you don't wanna to persist
+  blacklist: ["message"], // What you don't wanna to persist
   // whitelist: ['auth'] // What you want to persist
+};
+
+const initialState: State = {
+  message: null,
+  started: null,
+  locales: ["ja"],
+  locale: "ja",
+  sessionId: null,
+  lineUser: null,
+  restaurant: null,
+  axiosError: null,
+  t: null,
+  isLoading: false,
 };
 
 const restaurantSlice = createSlice({
   name: "reserve",
-  initialState: {
-    message: null,
-    started: null,
-    locales: ["ja"],
-    locale: "ja",
-    sessionId: null,
-    lineUser: null,
-    restaurant: null,
-    axiosError: null,
-    t: null,
-  },
+  initialState,
   reducers: {
     HYDRATE: (state, action) => ({ ...state, ...action.payload }),
     TICK: (state, action) => ({ ...state, tick: action.payload }),
@@ -109,6 +254,9 @@ const restaurantSlice = createSlice({
     setT: (state, action) => {
       return { ...state, t: action.payload === "ja" ? ja : ja };
     },
+    setIsLoading: (state, action) => {
+      return { ...state, isLoading: action.payload };
+    },
   },
 });
 
@@ -125,6 +273,7 @@ export const {
   setFlash,
   clearFlash,
   setT,
+  setIsLoading,
 } = restaurantSlice.actions;
 export default persistedReducer;
 
@@ -132,18 +281,43 @@ export type RootState = ReturnType<typeof store.getState>;
 
 export type AppDispatch = typeof store.dispatch;
 
+const listenerMiddleware = createListenerMiddleware();
+
+listenerMiddleware.startListening({
+  matcher: isAnyOf(setFlash, setIsLoading),
+  effect: (action, listenerApi) => {
+    const { lineUser, message }: State = listenerApi.getState();
+    if (message?.LIFF_INITED) {
+      import("@line/liff").then((result) => {
+        const liff = result.default;
+        //  　LIFFプロファイル取得・設定
+        const _settingLiffProfile = async (liff) => {
+          const _lineUser = await getLiffProfile(liff);
+          listenerApi.dispatch(setLineUser(_lineUser));
+        };
+        // LIFF Login & Profile
+        if (!lineUser || !("expire" in lineUser)) {
+          // Get LIFF Profile & Token
+          _settingLiffProfile(liff);
+        } else {
+          const now = new Date();
+          const expire = parseInt(lineUser.expire, 10);
+          if (expire < now.getTime()) {
+            // Get LIFF Profile & Token
+            _settingLiffProfile(liff);
+          }
+        }
+      });
+    }
+  },
+});
+
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: [thunk],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: { ignoredActions: ["persist/PERSIST"] },
+    }).prepend(listenerMiddleware.middleware),
 });
 
 export const persistor = persistStore(store);
-
-export const selectors = {
-  axiosError(state) {
-    return state.axiosError;
-  },
-  isAxiosError(state) {
-    return state.axiosError != null ? true : false;
-  },
-};

@@ -20,16 +20,11 @@ import Link from "next/link";
 // };
 export default function BlogRoll({ blogs }) {
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6  laptop:grid-cols-2">
       {blogs &&
         blogs.map((blog) => (
-          <div className="" key={blog.id}>
-            <article
-              className="blog-list-item tile is-child box notification"
-              //  ${
-              //   blog.frontmatter.featuredpost ? "is-featured" : ""
-              // }`}
-            >
+          <div key={blog.id}>
+            <article className="blog-list-item box notification bg-amber-700/20 ">
               <header>
                 {blog.eyecatch ? (
                   <div className="featured-thumbnail h-full">
@@ -63,8 +58,6 @@ export default function BlogRoll({ blogs }) {
                 </p>
               </header>
               <p className="text-xs">
-                {/* {htmlToText(blog.content).substr(0, 150) + "…"} */}
-
                 {blog.content
                   .match(/[^\<\>]+(?=\<[^\<\>]+\>)|[^\<\>]+$/g)
                   .join(" ")

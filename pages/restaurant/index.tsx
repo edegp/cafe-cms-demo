@@ -66,11 +66,11 @@ const Areas = ({ areas, restaurants }) => {
         <title>カルディ予約　店舗選択ページ</title>
       </Head>
       <Layout title="カルディ予約　店舗選択ページ" className="bg-white">
-        <Header className="flex text-center bg-primary">
+        <Header className="flex bg-primary text-center">
           <Typography.Title
             level={2}
             // eslint-disable-next-line tailwindcss/no-custom-classname
-            className="self-center mb-0 text-white font-[Yu Mincho]"
+            className="font-[Yu Mincho] mb-0 self-center text-white"
           >
             予約　店舗選択
           </Typography.Title>
@@ -79,8 +79,8 @@ const Areas = ({ areas, restaurants }) => {
           <Row>
             <Space direction="vertical" size="middle" className="flex w-full">
               {areas.map((area) => (
-                <Collapse key={area.id} className="w-full">
-                  <Panel key={area.id} header={area.name}>
+                <Collapse key={area.name} className="w-full">
+                  <Panel key={area.name} header={area.name}>
                     <Row
                       gutter={[16, 32]}
                       justify="space-evenly"
@@ -90,15 +90,16 @@ const Areas = ({ areas, restaurants }) => {
                         <Col
                           key={restaurant.name}
                           xs={24}
+                          sm={21}
                           lg={12}
-                          xl={{ span: 10, offset: 2 }}
+                          xxl={8}
                         >
                           <Card
                             hoverable
                             onClick={() => reserve(area, restaurant)}
                             title={restaurant.name}
                           >
-                            <Row gutter={16} align="middle">
+                            <Row gutter={8} align="middle">
                               <Col xs={24} md={13}>
                                 <Image
                                   src={restaurant.img}
@@ -143,18 +144,16 @@ const Areas = ({ areas, restaurants }) => {
                                     </Typography>
                                   </List.Item>
                                   <List.Item>
-                                    <Typography>
-                                      <Button
-                                        href="javascript:void(0);"
-                                        onClick={() =>
-                                          openLineOA(restaurant.line)
-                                        }
-                                        onMouseDown={() => mousedownCard(2)}
-                                        className="text-line hover:border-line"
-                                      >
-                                        {t.areas.msg007}
-                                      </Button>
-                                    </Typography>
+                                    <Button
+                                      href="javascript:void(0);"
+                                      onClick={() =>
+                                        openLineOA(restaurant.line)
+                                      }
+                                      onMouseDown={() => mousedownCard(2)}
+                                      className="text-line hover:border-line"
+                                    >
+                                      {t.areas.msg007}
+                                    </Button>
                                   </List.Item>
                                   <List.Item>
                                     <Typography>

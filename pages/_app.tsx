@@ -2,10 +2,9 @@ import "styles/tailwind.scss";
 import "styles/globals.scss";
 import "styles/tailwind-utils.scss";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Provider } from "react-redux";
 import RestaurantLayout from "components/RestaurantLayout";
-import { getLiffProfile } from "utils/liff";
 import { useRouter } from "next/router";
 import {
   store,
@@ -15,9 +14,13 @@ import {
   setFlash,
   setT,
   persistor,
+  setIsLoading,
 } from "store";
 import { PersistGate } from "redux-persist/integration/react";
 import Head from "next/head";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Spin } from "antd";
+import { initializeConnect } from "react-redux/es/components/connect";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -29,77 +32,58 @@ function MyApp({ Component, pageProps }) {
       : router.pathname === "/restaurant/delete"
       ? process.env.NEXT_PUBLIC_LIFF_ID_DELETE_DEV
       : process.env.NEXT_PUBLIC_LIFF_ID_DEV;
-
-  const { lineUser, t } = store.getState();
-  const [message, setMessage] = useState({ LIFF_INITED: false });
-  useEffect(() => {
-    if (router.pathname.startsWith("/restaurant")) {
+  const { message, isLoading } = store.getState();
+  const Initialize = async () => {
+    store.dispatch(setIsLoading(true));
+    if (!message?.LIFF_INITED) {
+      store.dispatch(
+        setStarted(
+          new Date().toLocaleString("ja-JP", {
+            timeZone: "Asia/Tokyo",
+          })
+        )
+      );
+      // 言語
+      if ("lang" in router.query) {
+        store.dispatch(setLocale(router.query.lang));
+      }
+      await store.dispatch(setT(router.locale));
       Promise.all([import("@line/liff"), import("@line/liff-mock")]).then(
         (result) => {
           const liff = result[0].default;
           const LiffMockPlugin = result[1].default;
-          const inited = message?.["LIFF_INITED"];
-          //  　LIFFプロファイル取得・設定
-          const _settingLiffProfile = async (liff) => {
-            const _lineUser = await getLiffProfile(liff);
-            store.dispatch(setLineUser(_lineUser));
-          };
-          // LIFF Login & Profile
-          if (inited) {
-            if (!lineUser || !("expire" in lineUser)) {
-              // Get LIFF Profile & Token
-              _settingLiffProfile(liff);
-              // console.log(context.store.lineUser);
-            } else {
-              const now = new Date();
-              const expire = parseInt(lineUser.expire, 10);
-              if (expire < now.getTime()) {
-                // Get LIFF Profile & Token
-                _settingLiffProfile(liff);
-              }
-            }
-          } else {
-            // 起動時間
-            store.dispatch(
-              setStarted(
-                new Date().toLocaleString("ja-JP", {
-                  timeZone: "Asia/Tokyo",
-                })
-              )
-            );
-            // 言語
-            if ("lang" in router.query) {
-              store.dispatch(setLocale(router.query.lang));
-            }
-            store.dispatch(setT(router.locale));
-            // LIFF Initialize
-            const MOCK = Boolean(process.env.MOCK === "true");
-            let mock;
-            if (MOCK) {
-              mock = true;
-              liff.use(new LiffMockPlugin());
-            }
-            liff
-              .init({
-                liffId,
-                mock,
-              })
-              .then(() => {
-                store.dispatch(setFlash({ LIFF_INITED: true }));
-                setMessage({ LIFF_INITED: true });
-                const loggedIn = liff.isLoggedIn();
-                if (!loggedIn) {
-                  liff.login();
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-              });
+          // LIFF Initialize
+          const mock = Boolean(process.env.NODE_ENV !== "production");
+          if (mock) {
+            liff.use(new LiffMockPlugin());
           }
+          liff
+            .init({
+              liffId,
+              mock,
+            })
+            .then(() => {
+              const loggedIn = liff.isLoggedIn();
+              if (!loggedIn) {
+                liff.login();
+              }
+              store.dispatch(setFlash({ LIFF_INITED: true }));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         }
       );
     }
-  }, [router.pathname, message, router.query, router.locale, lineUser]);
+    store.dispatch(setIsLoading(false));
+  };
+  useEffect(() => {
+    if (router.pathname.startsWith("/restaurant")) Initialize();
+  }, [message]);
+  if (isLoading)
+    <Spin tip="Loading...">
+      <LoadingOutlined style={{ fontSize: 24 }} spin />
+    </Spin>;
   if (router.pathname.startsWith("/restaurant"))
     return (
       <>

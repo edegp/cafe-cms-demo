@@ -7,10 +7,10 @@ const AboutPage = () => {
     <Layout title="KALDIの価値" description="">
       <section className="section section--gradient">
         <div className="container">
-          <div className="flex flex-row columns">
+          <div className="columns flex flex-row">
             <div className="basis-10/12">
               <div className="section">
-                <h2 className="text-3xl font-bold title">KALDIの価値</h2>
+                <h2 className="title text-3xl font-bold">KALDIの価値</h2>
                 <div className="content">
                   <h3>日陰で育てられたコーヒー</h3>
                   <p>

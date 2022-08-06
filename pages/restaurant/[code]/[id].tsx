@@ -49,26 +49,12 @@ export default function Idex(props: {
   statuses: any;
   area: any;
   restaurant: any;
-  selectedMonth: any;
   minDate: any;
   maxDate: any;
-  months: any;
   times: any;
   course: any;
-  maxSeats: any;
 }) {
-  const {
-    statuses,
-    area,
-    restaurant,
-    selectedMonth,
-    minDate,
-    maxDate,
-    months,
-    times,
-    course,
-    maxSeats,
-  } = props;
+  const { statuses, area, restaurant, maxDate, minDate, times, course } = props;
   const router = useRouter();
   const swiperRef = useRef() as any;
   const dispatch = useDispatch();
@@ -226,18 +212,7 @@ export default function Idex(props: {
       }
       return true;
     },
-    [
-      course,
-      dispatch,
-      errorDialogMessage,
-      lineUser.name,
-      lineUser.token,
-      restaurant,
-      router,
-      t.calendar.msg014,
-      t.calendar.msg016,
-      t.calendar.msg017,
-    ]
+    [course, dispatch, errorDialogMessage]
   );
   const handleClese = useCallback(() => setReserveDate(null), []);
   const calendarChange = useCallback(
@@ -400,7 +375,7 @@ export default function Idex(props: {
       return (
         <>
           <div
-            className={`mb-1 h-[9vw] min-h-[82px] text-center ${
+            className={`mb-1 h-[9vw] max-h-[13vh] min-h-[82px] text-center ${
               valueMonth === curMonth &&
               value > moment(minDate) &&
               value < moment(maxDate)
@@ -474,7 +449,7 @@ export default function Idex(props: {
           content={`${reserveDate} ${restaurant.name}&nbsp;&nbsp;${t.calendar.msg001}`}
         />
       </Head>
-      <Layout className="z-0 bg-white">
+      <Layout className="z-0 mx-auto max-w-screen-laptop bg-white desktop:max-w-[1300px]">
         <Layout.Content>
           <AntdCalendar
             dateFullCellRender={dateFullCellRender}
@@ -483,7 +458,7 @@ export default function Idex(props: {
             defaultValue={moment()}
             validRange={[moment(minDate), moment(maxDate)]}
             onChange={calendarChange}
-            className="mx-vw-10"
+            className="mx-vw-6 tablet:mx-vw-12"
           />
           <Spin
             spinning={loading}
@@ -501,10 +476,12 @@ export default function Idex(props: {
               height={"100vh"}
               placement="bottom"
               className="z-30"
+              title={
+                <Typography.Title level={5}>
+                  {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
+                </Typography.Title>
+              }
             >
-              <Typography>
-                {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
-              </Typography>
               <Swiper
                 onInit={(core: SwiperCore) => {
                   swiperRef.current = core.el;
@@ -515,7 +492,7 @@ export default function Idex(props: {
                 onSlidePrevTransitionStart={handleSlidePrev}
               >
                 <SwiperSlide>
-                  <div className="h-[90vh]">
+                  <div className="mx-auto h-[90vh] tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop">
                     <Calendar
                       events={events.map((event, index) => ({
                         id: index,
@@ -560,7 +537,7 @@ export default function Idex(props: {
                   </div>
                 </SwiperSlide>
                 <SwiperSlide>
-                  <div className="h-[90vh]">
+                  <div className="mx-auto h-[90vh]  tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop">
                     <Calendar
                       events={events.map((event, index) => ({
                         id: index,
@@ -729,7 +706,9 @@ export default function Idex(props: {
                 >
                   {({ getFieldValue }) =>
                     getFieldValue("course") > 0 && (
-                      <pre>{course[getFieldValue("course")]?.comment}</pre>
+                      <Typography.Paragraph className="bg-neutral-400/40 p-5 font-['游明朝'] font-medium">
+                        {course[getFieldValue("course")]?.comment}
+                      </Typography.Paragraph>
                     )
                   }
                 </Form.Item>
@@ -820,13 +799,13 @@ export const getStaticProps = async ({ params, locale }) => {
       statuses,
       area,
       restaurant,
-      selectedMonth: months[0].value,
+      // selectedMonth: months[0].value,
       minDate,
       maxDate,
       months,
       times,
       course,
-      maxSeats: restaurant.seats,
+      // maxSeats: restaurant.seats,
     },
   };
 };

@@ -112,7 +112,7 @@ const Delete = ({ shopInfo, locale }) => {
             tip="送信中"
           >
             <div className="my-8 mx-5 text-neutral-600">
-              <span className="py-0 px-3 text-lg text-neutral-600 border-l-[12px] border-l-[#00ba00]">
+              <span className="border-l-[12px] border-l-[#00ba00] py-0 px-3 text-lg text-neutral-600">
                 {t.delete.title}
               </span>
               <Form
@@ -161,18 +161,18 @@ const Delete = ({ shopInfo, locale }) => {
                     })}
                   />
                 </Form.Item>
-                <Form.Item className="fixed bottom-0 left-0 p-0 mb-0 w-full">
+                <Form.Item className="fixed bottom-0 left-0 mb-0 w-full p-0">
                   <Button
                     size="large"
                     htmlType="submit"
-                    className="flex flex-[1_0_auto] justify-center 
-                    p-0 h-full leading-loose 
-                    text-white bg-[#00ba00]"
+                    className="flex h-full flex-[1_0_auto] 
+                    justify-center bg-[#00ba00] p-0 
+                    leading-loose text-white"
                     block
                   >
-                    <span className="flex relative flex-[1_0_auto] justify-center items-center text-lg font-bold">
+                    <span className="relative flex flex-[1_0_auto] items-center justify-center text-lg font-bold">
                       {t.delete.msg001}
-                      <RightOutlined className="flex items-center h-fit text-md" />
+                      <RightOutlined className="flex h-fit items-center text-md" />
                     </span>
                   </Button>
                 </Form.Item>
