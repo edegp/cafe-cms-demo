@@ -67,7 +67,6 @@ const Delete = ({ shopInfo, locale }) => {
       const { data } = await deleteReserve(token, day, shopId, start);
 
       if (data) {
-        console.log(data);
         const message = {
           no: data[0].reservationId,
           restaurant: { name: data[0].shopName },
