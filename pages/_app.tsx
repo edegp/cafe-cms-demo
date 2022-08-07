@@ -80,6 +80,7 @@ function MyApp({ Component, pageProps }) {
   };
   useEffect(() => {
     if (router.pathname.startsWith("/restaurant")) Initialize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message]);
   if (isLoading)
     <Spin tip="Loading...">

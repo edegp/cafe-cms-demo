@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import Link from "next/link";
 import { client } from "../../libs/client";
 import Layout from "../../components/Layout";

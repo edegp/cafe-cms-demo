@@ -212,6 +212,7 @@ export default function Idex(props: {
       }
       return true;
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [course, dispatch, errorDialogMessage]
   );
   const handleClese = useCallback(() => setReserveDate(null), []);
@@ -426,6 +427,7 @@ export default function Idex(props: {
         </>
       );
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [dayStatus, maxDate, minDate, month, showDayDetail]
   );
 
