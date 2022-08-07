@@ -18,7 +18,11 @@ function Navbar() {
     >
       <div className="container">
         <div className="navbar-brand">
-          <Link href="/" className="navbar-item" title="Logo">
+          <Link
+            href="/"
+            className="navbar-item hover:cursor-pointer"
+            title="Logo"
+          >
             <Image src={logo} alt="Kaldi" width={"88px"} />
           </Link>
           {/* Hamburger menu */}
