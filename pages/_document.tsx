@@ -1,5 +1,4 @@
 import { Html, Head, Main, NextScript } from "next/document";
-import Script from "next/script";
 
 export default function Document() {
   return (
@@ -32,12 +31,13 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
-        {process.env.FONT_SCTIPT && (
-          <Script
+        {process.env.NEXT_PUBLIC_FONT_SCRIPT && (
+          <script
+            type="module"
             id="font-script"
-            strategy="beforeInteractive"
+            // strategy="beforeInteractive"
             dangerouslySetInnerHTML={{
-              __html: `${process.env.FONT_SCTIPT}`,
+              __html: `${process.env.NEXT_PUBLIC_FONT_SCRIPT}`,
             }}
           />
         )}
