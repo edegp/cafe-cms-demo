@@ -17,16 +17,16 @@ import {
   setIsLoading,
 } from "store";
 import { PersistGate } from "redux-persist/integration/react";
-import Head from "next/head";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
+const liffId =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_LIFF_ID
+    : process.env.NEXT_PUBLIC_LIFF_ID_DEV;
+
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
-  const liffId =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_LIFF_ID
-      : process.env.NEXT_PUBLIC_LIFF_ID_DEV;
   const { message, isLoading } = store.getState();
   const Initialize = async () => {
     store.dispatch(setIsLoading(true));
@@ -83,8 +83,11 @@ function MyApp({ Component, pageProps }) {
   }, [message, router]);
   if (isLoading)
     return (
-      <Spin tip="Loading..." className="position absolute mx-auto">
-        <LoadingOutlined style={{ fontSize: 24 }} spin />
+      <Spin
+        tip="Loading..."
+        className="absolute  left-1/2 top-1/2  mx-auto text-primary"
+      >
+        <LoadingOutlined className="font-[36px] text-primary" spin />
       </Spin>
     );
   if (router.pathname.startsWith("/restaurant"))
@@ -94,7 +97,7 @@ function MyApp({ Component, pageProps }) {
           <PersistGate
             loading={
               <Spin
-                className="absolute top-1/2 left1/2 z-50 mx-auto text-primary"
+                className="absolute left-1/2 top-1/2 z-50 mx-auto text-primary"
                 indicator={
                   <LoadingOutlined className="font-[36px] text-primary" spin />
                 }
