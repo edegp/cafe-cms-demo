@@ -7,26 +7,15 @@ export default function FullWidthImage(props) {
     title,
     subheading,
     imgPosition = "top left",
-    bgAttachment = "unset",
   } = props;
-  const imageURL = `${
-    process.env.NODE_ENV === "production"
-      ? "https://cafe-cms-demo.vercel.app"
-      : "http://localhost:3000"
-  }${img.src}`;
-  const bgClass =
-    bgAttachment === "fixed"
-      ? `full-width-image mt-0`
-      : `full-width-image-container mt-0`;
   return (
     <>
       <div
-        className={bgClass}
+        className="full-width-image-container mt-0"
         style={{
           alignItems: "center",
           backgroundImage: `url(${img.src})`,
           backgroundPosition: imgPosition,
-          backgroundAttachment: bgAttachment,
         }}
       >
         <div className="algin-start flex h-[150px] flex-col justify-around leading-4">

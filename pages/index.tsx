@@ -47,12 +47,7 @@ const IndexPage = ({ blogs, result }) => {
       description="カルディホームページのトップぺージです"
     >
       <AntdLayout>
-        <FullWidthImage
-          img={HeroImage}
-          title={title}
-          subheading={subheading}
-          bgAttachment="fixed"
-        />
+        <FullWidthImage img={HeroImage} title={title} subheading={subheading} />
         <Content className="container">
           <div className="grid grid-flow-row gap-y-12">
             <div className="my-vw-16">
