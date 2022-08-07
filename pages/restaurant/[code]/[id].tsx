@@ -432,6 +432,8 @@ export default function Idex(props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dayStatus, maxDate, minDate, month, showDayDetail]
   );
+  const calendarClass =
+    "mx-auto h-[85vh] tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop [&_.rbc-toolbar]:flex-nowrap";
 
   return (
     <>
@@ -487,7 +489,7 @@ export default function Idex(props: {
                 onSlidePrevTransitionStart={handleSlidePrev}
               >
                 <SwiperSlide>
-                  <div className="mx-auto h-[85vh] tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop">
+                  <div className={calendarClass}>
                     <Calendar
                       events={events.map((event, index) => ({
                         id: index,
@@ -543,7 +545,7 @@ export default function Idex(props: {
                   </div>
                 </SwiperSlide>
                 <SwiperSlide>
-                  <div className="mx-auto h-[90vh]  tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop">
+                  <div className={calendarClass}>
                     <Calendar
                       events={events.map((event, index) => ({
                         id: index,
