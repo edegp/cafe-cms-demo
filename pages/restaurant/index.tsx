@@ -75,12 +75,19 @@ const Areas = ({ areas, restaurants }) => {
             予約　店舗選択
           </Typography.Title>
         </Header>
-        <Content className="m-[2.5%] mb-0 bg-white">
+        <Content className="m-[2.5%] bg-white mb-24">
           <Row>
             <Space direction="vertical" size="middle" className="flex w-full">
               {areas.map((area) => (
                 <Collapse key={area.name} className="w-full">
-                  <Panel key={area.name} header={area.name}>
+                  <Panel
+                    key={area.name}
+                    header={
+                      <Typography.Text className="font-semibold">
+                        {area.name}
+                      </Typography.Text>
+                    }
+                  >
                     <Row
                       gutter={[16, 32]}
                       justify="space-evenly"
@@ -97,7 +104,11 @@ const Areas = ({ areas, restaurants }) => {
                           <Card
                             hoverable
                             onClick={() => reserve(area, restaurant)}
-                            title={restaurant.name}
+                            title={
+                              <Typography.Text className="font-semibold">
+                                {restaurant.name}
+                              </Typography.Text>
+                            }
                           >
                             <Row gutter={8} align="middle">
                               <Col xs={24} md={13}>
@@ -185,7 +196,7 @@ const Areas = ({ areas, restaurants }) => {
           </Row>
         </Content>
         <Footer className="fixed bottom-0 w-full text-center">
-          <Button className="inline-flex justify-center align-middle">
+          <Button className="inline-flex justify-center items-center active:border-primary active:text-primary  hover:border-primary hover:text-primary hover:opacity-75 hover:shadow-lg hover:top-[-2px]">
             <LeftOutlined />
             カルディ非公式ホームページに戻る
           </Button>
