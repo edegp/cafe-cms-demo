@@ -40,7 +40,7 @@ const Delete_completed = () => {
               <ShopOutlined className="mr-2" />
               &nbsp;{t.delete_completed.msg006}
             </Col>
-            <Col span={14}>{message.restaurant} </Col>
+            <Col span={14}>{message.restaurant.name} </Col>
           </Row>
           <Row>
             <Col span={10} className="flex items-center">
@@ -58,29 +58,6 @@ const Delete_completed = () => {
             </Col>
             <Col span={14}>{message.start} ～</Col>
           </Row>
-          {/* <Row>
-            <Col span={10} className="flex items-center">
-              <UserOutlined className="mr-2" />
-              &nbsp;{t.completed.msg009}
-            </Col>
-            <Col span={14}>
-              {t.completed.msg013.replace("{people}", message.people)}{" "}
-            </Col>
-          </Row>
-          <Row>
-            <Col span={10} className="flex items-center">
-              <MoneyCollectOutlined className="mr-2" />
-              &nbsp;{t.completed.msg010}
-            </Col>
-            <Col span={14}>
-              {message.course.name}&nbsp;
-              {message.course.id !== 0 &&
-                t.completed.msg011.replace(
-                  "{price}",
-                  message.course.price.toLocaleString("ja-JP")
-                )}
-            </Col>
-          </Row> */}
         </Card>
       </Content>
       <Footer className="w-full bg-transparent">

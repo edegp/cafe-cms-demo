@@ -20,11 +20,6 @@ export default class Index extends React.Component {
                 <li>
                   <Link href="/contact">基本お問い合わせフォーム</Link>
                 </li>
-                <li>
-                  <Link href="/contact/file-upload/">
-                    ファイルアップロードのあるフォーム
-                  </Link>
-                </li>
               </ul>
             </div>
           </div>

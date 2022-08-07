@@ -10,11 +10,37 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import { getLiffProfile } from "utils/liff";
 import ja from "public/locales/ja";
 
+type Restaurant = {
+  id: number;
+  name: string;
+  img: string;
+  address: string;
+  start: string;
+  end: string;
+  holiday: string;
+  tel: string;
+  line: string;
+  budget: number;
+  seats: number;
+  smoking: number;
+  map: string[];
+};
+
+type Course = {
+  id: number;
+  name: string;
+  time: number;
+  price: number;
+  comment: string;
+  text: string;
+  value: number;
+};
+
 type Message = {
   no: string;
-  restaurant: string;
+  restaurant: Restaurant;
   name: string;
-  course: string;
+  course: Course;
   day: string;
   people: number;
   start: string;
@@ -147,7 +173,7 @@ type T = {
 };
 
 type State = {
-  message?: Message;
+  message?: Message | null;
   started?: string;
   locales?: string[];
   locale?: string;
@@ -245,10 +271,13 @@ const restaurantSlice = createSlice({
       };
     },
     clearFlash: (state, action) => {
-      if (action.payload?.name === undefined) {
+      if (!action.payload) {
         return { ...state, message: null };
-      } else if (action.payload?.name in state.message) {
-        return { ...state, message: { [action.payload.name]: undefined } };
+      } else if (action.payload in state.message) {
+        return {
+          ...state,
+          message: { ...state.message, [action.payload]: undefined },
+        };
       }
     },
     setT: (state, action) => {

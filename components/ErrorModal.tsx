@@ -3,7 +3,7 @@ import React from "react";
 import { Button, Card, Modal, Typography } from "antd";
 import { ExclamationCircleOutlined, CloseOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "store";
+import { RootState, setAxiosError } from "store";
 
 const ErrorModal = () => {
   // eslint-disable-next-line react-redux/useSelector-prefer-selectors
@@ -19,23 +19,19 @@ const ErrorModal = () => {
         <>
           <ExclamationCircleOutlined className="text-red-600" />
           {t.error.msg001}
-          <Button
-            onClick={() => dispatch({ type: "AxiosError", payload: null })}
-          >
+          <Button onClick={() => dispatch(setAxiosError(null))}>
             <CloseOutlined />
           </Button>
         </>
       }
       footer={
-        <Button className="text-emerald-700 bg-transparent" onClick={reload}>
+        <Button className="bg-transparent text-emerald-700" onClick={reload}>
           {t.error.msg004}
         </Button>
       }
     >
       <Typography>{t.error.msg003}</Typography>
-      <Typography>
-        （{t.error.msg003}：{axiosError}）
-      </Typography>
+      <Typography>{`（${t.error.msg003}：${axiosError}）`}</Typography>
     </Modal>
   );
 };
