@@ -8,14 +8,14 @@ export default function Home({ blogs }) {
   return (
     <Layout title={"ブログ"} description={"ブログ一覧"}>
       <div
-        className="full-width-image-container margin-top-0"
+        className="full-width-image-container mt-0"
         style={{
           backgroundImage: `url('/blog-index.jpg')`,
         }}
       >
         <Typography.Title
           level={2}
-          className="has-text-weight-bold is-size-1"
+          className="text-xl font-bold"
           style={{
             boxShadow: "0.5rem 0 0 #f40, -0.5rem 0 0 #f40",
             backgroundColor: "#f40",

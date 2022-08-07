@@ -12,7 +12,7 @@ function Navbar() {
   };
   return (
     <nav
-      className="navbar bg-transparent top-1"
+      className="navbar top-1 bg-transparent"
       role="navigation"
       aria-label="main-navigation"
     >

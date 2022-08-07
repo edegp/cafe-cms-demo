@@ -426,15 +426,7 @@ export default function Idex(props: {
         </>
       );
     },
-    [
-      dayStatus,
-      maxDate,
-      minDate,
-      month,
-      showDayDetail,
-      t.calendar.closingday,
-      t.calendar.full,
-    ]
+    [dayStatus, maxDate, minDate, month, showDayDetail]
   );
 
   return (
@@ -443,7 +435,6 @@ export default function Idex(props: {
         <title>
           {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
         </title>
-
         <meta
           property="og:title"
           content={`${reserveDate} ${restaurant.name}&nbsp;&nbsp;${t.calendar.msg001}`}
