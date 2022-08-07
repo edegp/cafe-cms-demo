@@ -396,7 +396,9 @@ export default function Idex(props: {
             value > moment(minDate) &&
             value < moment(maxDate) ? (
               status === 3 ? (
-                <Button danger>{t.calendar.full}</Button>
+                <Typography.Link className="text-red-600/80 inline-block mt-3">
+                  {t.calendar.full}
+                </Typography.Link>
               ) : status === 2 ? (
                 <>
                   <div>
@@ -416,9 +418,12 @@ export default function Idex(props: {
                   </div>
                 </>
               ) : (
-                <Button type="link" danger>
+                <Typography.Link
+                  type="link"
+                  className="text-red-500/80 inline-block mt-3"
+                >
                   {t.calendar.closingday}
-                </Button>
+                </Typography.Link>
               )
             ) : (
               <></>
@@ -470,9 +475,9 @@ export default function Idex(props: {
               placement="bottom"
               className="z-30"
               title={
-                <Typography.Title level={5}>
+                <Typography.Text>
                   {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
-                </Typography.Title>
+                </Typography.Text>
               }
             >
               <Swiper
@@ -513,7 +518,7 @@ export default function Idex(props: {
                       max={new Date(0, 0, 0, 23, 0, 0)}
                       eventPropGetter={() => ({
                         className:
-                          "odd:bg-slate-400 even:bg-primary  border-white pl-vw-36 align-items-center space-between opacity-80",
+                          "odd:bg-slate-500/70 even:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
                       })}
                       onSelectEvent={handleSelectEvent}
                       formats={{
@@ -558,7 +563,7 @@ export default function Idex(props: {
                       max={new Date(0, 0, 0, 23, 0, 0)}
                       eventPropGetter={() => ({
                         className:
-                          "even:bg-slate-400 odd:bg-primary border-white pl-vw-36 align-items-center space-between opacity-80",
+                          "even:bg-slate-500/70 odd:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
                       })}
                       onSelectEvent={handleSelectEvent}
                       formats={{
