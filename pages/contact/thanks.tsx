@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import { Typography } from "antd";
 import React from "react";
 import Layout from "../../components/Layout";

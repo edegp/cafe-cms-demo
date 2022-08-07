@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import { Col, Row, Typography } from "antd";
 import Image from "next/image";
 import Layout from "../../components/Layout";
@@ -7,7 +8,7 @@ export default function BlogId({ blog }) {
   return (
     <Layout title={blog.title} description="">
       <section className="section">
-        <div className="container content">
+        <div className="content container">
           <Row>
             <Col span={22} offset={2}>
               <Typography.Title level={2}>{blog.title}</Typography.Title>

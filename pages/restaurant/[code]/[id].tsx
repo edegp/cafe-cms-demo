@@ -492,8 +492,10 @@ export default function Idex(props: {
                       events={events.map((event, index) => ({
                         id: index,
                         title: event.name,
-                        start: new Date(event.start),
-                        end: new Date(event.end),
+                        start: new Date(
+                          new Date(event.start.replace(" ", "T"))
+                        ),
+                        end: new Date(new Date(event.end.replace(" ", "T"))),
                       }))}
                       step={30}
                       views={["day"]}
@@ -512,7 +514,16 @@ export default function Idex(props: {
                           0
                         )
                       }
-                      max={new Date(0, 0, 0, 23, 0, 0)}
+                      max={
+                        new Date(
+                          parseInt(maxDate.slice(0, 4), 10),
+                          parseInt(maxDate.slice(4, 6), 10),
+                          parseInt(maxDate.slice(6, 8), 10),
+                          23,
+                          0,
+                          0
+                        )
+                      }
                       eventPropGetter={() => ({
                         className:
                           "odd:bg-slate-500/70 even:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
@@ -537,8 +548,10 @@ export default function Idex(props: {
                       events={events.map((event, index) => ({
                         id: index,
                         title: event.name,
-                        start: new Date(event.start),
-                        end: new Date(event.end),
+                        start: new Date(
+                          new Date(event.start.replace(" ", "T"))
+                        ),
+                        end: new Date(new Date(event.end.replace(" ", "T"))),
                       }))}
                       step={30}
                       views={["day"]}
@@ -557,7 +570,16 @@ export default function Idex(props: {
                           0
                         )
                       }
-                      max={new Date(0, 0, 0, 23, 0, 0)}
+                      max={
+                        new Date(
+                          parseInt(maxDate.slice(0, 4), 10),
+                          parseInt(maxDate.slice(4, 6), 10),
+                          parseInt(maxDate.slice(6, 8), 10),
+                          23,
+                          0,
+                          0
+                        )
+                      }
                       eventPropGetter={() => ({
                         className:
                           "even:bg-slate-500/70 odd:bg-primary/80 border-white pl-vw-36 align-items-center space-between",

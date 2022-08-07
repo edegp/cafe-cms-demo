@@ -6,8 +6,8 @@ const Pricing = ({ data }) => (
     {data.map((price) => (
       <div key={price.plan} className="column">
         <section className="section">
-          <h4 className="text-center text-semibold">{price.plan}</h4>
-          <h2 className="text-xl text-center text-primary text-bold">
+          <h4 className="font-sans-semibold text-center">{price.plan}</h4>
+          <h2 className="text-center text-xl font-bold text-primary">
             ${price.price}
           </h2>
           <p className="text-semibold">{price.description}</p>
