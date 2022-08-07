@@ -2,8 +2,7 @@ import * as React from "react";
 import Link from "next/link";
 import Layout from "../../components/Layout";
 
-export default class Index extends React.Component {
-  render() {
+export default function Index () {
     return (
       <Layout
         title="例"
