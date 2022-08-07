@@ -22,6 +22,8 @@ import ja from "antd/lib/locale/ja_JP";
 import CalendarLocale from "antd//lib/calendar/locale/ja_JP";
 import { useForm } from "antd/lib/form/Form";
 import { useRouter } from "next/router";
+import { Header } from "antd/lib/layout/layout";
+import Head from "next/head";
 
 const Delete = ({ shopInfo, locale }) => {
   const router = useRouter();
@@ -65,40 +67,43 @@ const Delete = ({ shopInfo, locale }) => {
     const start = input.start.format("HH:mm");
     try {
       const { data } = await deleteReserve(token, day, shopId, start);
-
-      if (data) {
-        const message = {
-          no: data[0].reservationId,
-          restaurant: { name: data[0].shopName },
-          name: lineUser.name,
-          day,
-          start,
-        };
-        dispatch(setFlash(message));
-        await router.push("/restaurant/delete_completed");
-      } else {
-        setErrorDialogMessage({
-          ...errorDialogMessage,
-          title: t.error.msg001,
-          text: t.error.msg002,
-        });
-        console.log("deta error");
-      }
+      const message = {
+        no: data[0].reservationId,
+        restaurant: { name: data[0].shopName },
+        name: lineUser.name,
+        day,
+        start,
+      };
+      dispatch(setFlash(message));
+      await router.push("/restaurant/delete_completed");
+    } catch {
+      setErrorDialogMessage({
+        ...errorDialogMessage,
+        title: "ご指定の予約が見つかりませんでした。",
+        text: "条件をお確かめの上、再度お試しください",
+      });
     } finally {
       setLoading(false);
     }
     return true;
   };
+  console.log(errorDialogMessage);
+
+  console.log(t);
   return (
     <ConfigProvider locale={ja}>
+      <Head>
+        <title>予約取り消しページ</title>
+      </Head>
       <Layout className="h-full min-h-screen bg-white">
-        <Image
-          src="https://media.istockphoto.com/photos/stylish-dinner-picture-id1178092305"
-          height="789"
-          width="526"
-          alt="Restaurant"
-          objectFit="cover"
-        />
+        <Header className="relative h-[30vh]">
+          <Image
+            src="https://media.istockphoto.com/photos/stylish-dinner-picture-id1178092305"
+            alt="Restaurant"
+            layout="fill"
+            objectFit="cover"
+          />
+        </Header>
         <Content className="pb-24">
           <Spin
             spinning={loading}
@@ -165,7 +170,7 @@ const Delete = ({ shopInfo, locale }) => {
                     htmlType="submit"
                     className="flex h-full flex-[1_0_auto] 
                     justify-center bg-[#00ba00] p-0 
-                    leading-loose text-white"
+                    leading-loose text-white hover:border-white hover:opacity-80"
                     block
                   >
                     <span className="relative flex flex-[1_0_auto] items-center justify-center text-lg font-bold">
@@ -177,21 +182,21 @@ const Delete = ({ shopInfo, locale }) => {
               </Form>
             </div>
           </Spin>
+          <Modal
+            visible={Boolean(errorDialogMessage.title)}
+            onCancel={handleErrorModalClick}
+            onOk={handleErrorModalClick}
+          >
+            <Typography>
+              <span>{errorDialogMessage.title}</span>
+            </Typography>
+            <Typography>
+              <span className="whitespace-pre-wrap">
+                {errorDialogMessage.text}
+              </span>
+            </Typography>
+          </Modal>
         </Content>
-        <Modal
-          visible={Boolean(errorDialogMessage.title)}
-          onCancel={handleErrorModalClick}
-          onOk={handleErrorModalClick}
-        >
-          <Typography>
-            <span>{errorDialogMessage.title}</span>
-          </Typography>
-          <Typography>
-            <span className="whitespace-pre-wrap">
-              {errorDialogMessage.text}
-            </span>
-          </Typography>
-        </Modal>
       </Layout>
     </ConfigProvider>
   );
@@ -218,4 +223,3 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 };
-// );
