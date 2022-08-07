@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import github from "public/img/github-icon.svg";
 import logo from "public/img/logo.svg";
+import { Typography } from "antd";
 
 function Navbar() {
   const [active, setActive] = useState(false);
@@ -18,13 +19,13 @@ function Navbar() {
     >
       <div className="container">
         <div className="navbar-brand">
-          <Link
+          <Typography.Link
             href="/"
             className="navbar-item hover:cursor-pointer"
             title="Logo"
           >
             <Image src={logo} alt="Kaldi" width={"88px"} />
-          </Link>
+          </Typography.Link>
           {/* Hamburger menu */}
           <div
             className={`navbar-burger burger laptop:hidden ${

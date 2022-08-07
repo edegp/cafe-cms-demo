@@ -1,5 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
-import { ConsoleLogger } from "@aws-amplify/core";
 import React from "react";
 
 export default function FullWidthImage(props) {
@@ -11,33 +9,27 @@ export default function FullWidthImage(props) {
     imgPosition = "top left",
     bgAttachment = "unset",
   } = props;
-  console.log(
-    `${
-      process.env.NODE_ENV === "production"
-        ? "https://anful.jp"
-        : "localhost:3000"
-    }${img.src}`
-  );
+  const imageURL = `${
+    process.env.NODE_ENV === "production"
+      ? "https://cafe-cms-demo.vercel.app"
+      : "http://localhost:3000"
+  }${img.src}`;
+  const bgClass =
+    bgAttachment === "fixed"
+      ? `full-width-image mt-0`
+      : `full-width-image-container mt-0`;
   return (
     <>
       <div
-        className={`${
-          bgAttachment === "fixed"
-            ? "full-width-image"
-            : "full-width-image-container"
-        } mt-0`}
+        className={bgClass}
         style={{
           alignItems: "center",
-          backgroundImage: `url(${
-            process.env.NODE_ENV === "production"
-              ? "https://cafe-cms-demo.vercel.app"
-              : "http://localhost:3000"
-          }${img.src})`,
+          backgroundImage: `url(${img.src})`,
           backgroundPosition: imgPosition,
           backgroundAttachment: bgAttachment,
         }}
       >
-        <div className="flex flex-col justify-around h-[150px] leading-4 algin-start">
+        <div className="algin-start flex h-[150px] flex-col justify-around leading-4">
           {title && (
             <h1
               className="text-bold text-3xl tablet:text-2xl laptop:text-xl"

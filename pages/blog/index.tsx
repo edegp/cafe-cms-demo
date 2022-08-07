@@ -7,12 +7,7 @@ import { Typography } from "antd";
 export default function Home({ blogs }) {
   return (
     <Layout title={"ブログ"} description={"ブログ一覧"}>
-      <div
-        className="full-width-image-container mt-0"
-        style={{
-          backgroundImage: `url('/blog-index.jpg')`,
-        }}
-      >
+      <div className="full-width-image-container mt-0 bg-[url('/img/blog-index.jpg')]">
         <Typography.Title
           level={2}
           className="text-xl font-bold"

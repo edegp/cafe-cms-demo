@@ -13,7 +13,6 @@ import {
 } from "antd";
 import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
 import Image from "next/image";
-import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { store, clearFlash, setT, setFlash, RootState } from "store";
 import { getAreaShops, deleteReserve } from "utils/helpers";
@@ -48,7 +47,7 @@ const Delete = ({ shopInfo, locale }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(clearFlash);
-  }, []);
+  }, [dispatch]);
   const handleErrorModalClick = useCallback(
     () =>
       setErrorDialogMessage({
@@ -71,7 +70,7 @@ const Delete = ({ shopInfo, locale }) => {
         console.log(data);
         const message = {
           no: data[0].reservationId,
-          restaurant: data[0].shopName,
+          restaurant: { name: data[0].shopName },
           name: lineUser.name,
           day,
           start,

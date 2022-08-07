@@ -21,6 +21,7 @@ import Head from "next/head";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import { initializeConnect } from "react-redux/es/components/connect";
+import Script from "next/script";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -112,13 +113,6 @@ function MyApp({ Component, pageProps }) {
           <html lang="ja" />
           <meta property="og:url" content="/" />
           <meta property="og:image" content="/og-image.jpg" />
-          {process.env.FONT_SCTIPT && (
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `${process.env.FONT_SCTIPT}`,
-              }}
-            />
-          )}
         </Head>
         <Provider store={store}>
           <PersistGate loading={<div>loading...</div>} persistor={persistor}>
