@@ -1,4 +1,5 @@
 /* eslint-disable tailwindcss/no-custom-classname */
+import { ConsoleLogger } from "@aws-amplify/core";
 import React from "react";
 
 export default function FullWidthImage(props) {
@@ -10,6 +11,13 @@ export default function FullWidthImage(props) {
     imgPosition = "top left",
     bgAttachment = "unset",
   } = props;
+  console.log(
+    `${
+      process.env.NODE_ENV === "production"
+        ? "https://anful.jp"
+        : "localhost:3000"
+    }${img.src}`
+  );
   return (
     <>
       <div
@@ -20,7 +28,11 @@ export default function FullWidthImage(props) {
         } mt-0`}
         style={{
           alignItems: "center",
-          backgroundImage: `url(${img.src})`,
+          backgroundImage: `url(${
+            process.env.NODE_ENV === "production"
+              ? "https://cafe-cms-demo.vercel.app"
+              : "http://localhost:3000"
+          }${img.src})`,
           backgroundPosition: imgPosition,
           backgroundAttachment: bgAttachment,
         }}
