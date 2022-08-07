@@ -219,18 +219,7 @@ export default function Idex(props: {
     (value: React.SetStateAction<moment.Moment>) => setMonth(value),
     []
   );
-  const handleSlideNext = useCallback(
-    () =>
-      showDayDetail(moment(reserveDate).add(1, "days").format("YYYY-MM-DD")),
-    [reserveDate, showDayDetail]
-  );
-  const handleSlidePrev = useCallback(
-    () =>
-      showDayDetail(
-        moment(reserveDate).subtract(1, "days").format("YYYY-MM-DD")
-      ),
-    [reserveDate, showDayDetail]
-  );
+
   const handleNavigate = useCallback(
     (newDate: moment.MomentInput) => {
       const newD = moment(newDate).format("YYYY-MM-DD");
@@ -243,11 +232,9 @@ export default function Idex(props: {
         return;
       }
       const swiper = swiperRef?.current?.swiper;
-      moment().add(14, "days").format("YYYY-MM-DD") !== reserveDate &&
       reserveDate < newD
         ? swiper.slideNext()
-        : moment().subtract(15, "days").format("YYYY-MM-DD") !== reserveDate &&
-          reserveDate > newD
+        : reserveDate > newD
         ? swiper.slidePrev()
         : setErrorDialogMessage({
             ...errorDialogMessage,
@@ -258,6 +245,12 @@ export default function Idex(props: {
     },
     [errorDialogMessage, reserveDate, showDayDetail]
   );
+  const handleSlideNext = useCallback(() => {
+    showDayDetail(moment(reserveDate).add(1, "days").format("YYYY-MM-DD"));
+  }, [reserveDate, showDayDetail]);
+  const handleSlidePrev = useCallback(() => {
+    showDayDetail(moment(reserveDate).subtract(1, "days").format("YYYY-MM-DD"));
+  }, [reserveDate, showDayDetail]);
   const handleSelectEvent = useCallback(
     (calEvent: { start: moment.MomentInput; end: moment.MomentInput }) => {
       setReserveDialog(true);
@@ -494,11 +487,16 @@ export default function Idex(props: {
                     timeslots={2}
                     date={new Date(reserveDate)}
                     onNavigate={handleNavigate}
+                    messages={{
+                      previous: "前の日",
+                      next: "次の日",
+                      today: "今日",
+                    }}
                     min={
                       new Date(
-                        minDate.slice(0, 4),
-                        minDate.slice(4, 6),
-                        minDate.slice(6, 8),
+                        parseInt(minDate.slice(0, 4), 10),
+                        parseInt(minDate.slice(4, 6), 10),
+                        parseInt(minDate.slice(6, 8), 10),
                         10,
                         0,
                         0
@@ -548,6 +546,11 @@ export default function Idex(props: {
                     timeslots={2}
                     date={new Date(reserveDate)}
                     onNavigate={handleNavigate}
+                    messages={{
+                      previous: "前の日",
+                      next: "次の日",
+                      today: "今日",
+                    }}
                     min={
                       new Date(
                         parseInt(minDate.slice(0, 4), 10),
@@ -684,7 +687,7 @@ export default function Idex(props: {
                   <Select onChange={handleCourseChange}>
                     {course.map(
                       (c: {
-                        id: React.Key;
+                        id: number;
                         name:
                           | string
                           | number
