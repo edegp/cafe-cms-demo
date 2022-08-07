@@ -2,6 +2,7 @@ import Link from "next/link";
 import { client } from "../../libs/client";
 import Layout from "../../components/Layout";
 import BlogRoll from "../../components/BlogRoll";
+import { Typography } from "antd";
 
 export default function Home({ blogs }) {
   return (
@@ -12,7 +13,8 @@ export default function Home({ blogs }) {
           backgroundImage: `url('/blog-index.jpg')`,
         }}
       >
-        <h1
+        <Typography.Title
+          level={2}
           className="has-text-weight-bold is-size-1"
           style={{
             boxShadow: "0.5rem 0 0 #f40, -0.5rem 0 0 #f40",
@@ -22,7 +24,7 @@ export default function Home({ blogs }) {
           }}
         >
           Latest Stories
-        </h1>
+        </Typography.Title>
       </div>
       <section className="section">
         <div className="container">

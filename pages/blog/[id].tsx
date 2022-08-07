@@ -1,3 +1,4 @@
+import { Col, Row, Typography } from "antd";
 import Image from "next/image";
 import Layout from "../../components/Layout";
 import { client } from "../../libs/client";
@@ -7,11 +8,13 @@ export default function BlogId({ blog }) {
     <Layout title={blog.title} description="">
       <section className="section">
         <div className="container content">
-          <div className="columns">
-            <div className="column is-10 is-offset-1">
-              <h1>{blog.title}</h1>
-              <p>{blog.publishedAt?.split("T")[0]}</p>
-              <p>
+          <Row>
+            <Col span={22} offset={2}>
+              <Typography.Title level={2}>{blog.title}</Typography.Title>
+              <Typography.Paragraph>
+                {blog.publishedAt?.split("T")[0]}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
                 {blog.eyecatch?.url && (
                   <Image
                     src={blog.eyecatch?.url}
@@ -20,14 +23,14 @@ export default function BlogId({ blog }) {
                     alt={blog.title}
                   />
                 )}
-              </p>
+              </Typography.Paragraph>
               <div
                 dangerouslySetInnerHTML={{
                   __html: `${blog.content}`,
                 }}
               />
-            </div>
-          </div>
+            </Col>
+          </Row>
         </div>
       </section>
     </Layout>
