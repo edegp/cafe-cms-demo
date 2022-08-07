@@ -94,7 +94,7 @@ function MyApp({ Component, pageProps }) {
           <PersistGate
             loading={
               <Spin
-                className="absolute top-1/2 z-50 mx-auto text-primary"
+                className="absolute top-1/2 left1/2 z-50 mx-auto text-primary"
                 indicator={
                   <LoadingOutlined className="font-[36px] text-primary" spin />
                 }
