@@ -27,6 +27,7 @@ export default function Document() {
         <html lang="ja" />
         <meta property="og:url" content="/" />
         <meta property="og:image" content="/og-image.jpg" />
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
       </Head>
       <body>
         <Main />
