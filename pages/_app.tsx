@@ -20,18 +20,12 @@ import { PersistGate } from "redux-persist/integration/react";
 import Head from "next/head";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
-import { initializeConnect } from "react-redux/es/components/connect";
-import Script from "next/script";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const liffId =
     process.env.NODE_ENV === "production"
-      ? router.pathname === "/restaurant/delete"
-        ? process.env.NEXT_PUBLIC_LIFF_ID_DELETE
-        : process.env.NEXT_PUBLIC_LIFF_ID
-      : router.pathname === "/restaurant/delete"
-      ? process.env.NEXT_PUBLIC_LIFF_ID_DELETE_DEV
+      ? process.env.NEXT_PUBLIC_LIFF_ID
       : process.env.NEXT_PUBLIC_LIFF_ID_DEV;
   const { message, isLoading } = store.getState();
   const Initialize = async () => {
@@ -66,7 +60,12 @@ function MyApp({ Component, pageProps }) {
             .then(() => {
               const loggedIn = liff.isLoggedIn();
               if (!loggedIn) {
-                liff.login();
+                liff.login({
+                  redirectUri:
+                    router.pathname == "/restaurant/delete"
+                      ? `${window.location.origin}/delete`
+                      : `${window.location.origin}`,
+                });
               }
               store.dispatch(setFlash({ LIFF_INITED: true }));
             })
@@ -81,40 +80,16 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (router.pathname.startsWith("/restaurant")) Initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message]);
+  }, [message, router]);
   if (isLoading)
-    <Spin tip="Loading...">
-      <LoadingOutlined style={{ fontSize: 24 }} spin />
-    </Spin>;
+    return (
+      <Spin tip="Loading..." className="position absolute mx-auto">
+        <LoadingOutlined style={{ fontSize: 24 }} spin />
+      </Spin>
+    );
   if (router.pathname.startsWith("/restaurant"))
     return (
       <>
-        {/* <React.StrictMode> */}
-        <Head>
-          <link
-            rel="apple-touch-icon"
-            sizes="180x180"
-            href="/favicon/apple-touch-icon.png"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            href="/favicon/favicon-32x32.png"
-            sizes="32x32"
-          />
-          <link
-            rel="icon"
-            type="image/png"
-            href="/favicon/favicon-16x16.png"
-            sizes="16x16"
-          />
-          <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff4400" />
-          <meta name="theme-color" content="#fff" />
-          <meta property="og:type" content="business.business" />
-          <html lang="ja" />
-          <meta property="og:url" content="/" />
-          <meta property="og:image" content="/og-image.jpg" />
-        </Head>
         <Provider store={store}>
           <PersistGate loading={<div>loading...</div>} persistor={persistor}>
             <RestaurantLayout>

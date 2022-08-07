@@ -145,7 +145,6 @@ const Areas = ({ areas, restaurants }) => {
                                   </List.Item>
                                   <List.Item>
                                     <Button
-                                      href="javascript:void(0);"
                                       onClick={() =>
                                         openLineOA(restaurant.line)
                                       }
@@ -166,7 +165,6 @@ const Areas = ({ areas, restaurants }) => {
                                 <EnvironmentOutlined />
                                 <Button
                                   type="link"
-                                  href="javascript:void(0);"
                                   onClick={() =>
                                     openMap(restaurant.name, restaurant.map)
                                   }

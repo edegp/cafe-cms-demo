@@ -329,7 +329,7 @@ export default function Idex(props: {
         );
       }
       return (
-        <div className=" p-8">
+        <div key={value.format()} className=" p-8">
           <Typography.Title level={4} className="my-vw-8 text-center">
             <span className="line-color">
               <span className="hidden-xs-only">
@@ -376,6 +376,7 @@ export default function Idex(props: {
       return (
         <>
           <div
+            key={value.format()}
             className={`mb-1 h-[9vw] max-h-[13vh] min-h-[82px] text-center ${
               valueMonth === curMonth &&
               value > moment(minDate) &&
@@ -446,6 +447,7 @@ export default function Idex(props: {
           content={`${reserveDate} ${restaurant.name}&nbsp;&nbsp;${t.calendar.msg001}`}
         />
       </Head>
+
       <Layout className="z-0 mx-auto max-w-screen-laptop bg-white desktop:max-w-[1300px]">
         <Layout.Content>
           <AntdCalendar
@@ -457,158 +459,152 @@ export default function Idex(props: {
             onChange={calendarChange}
             className="mx-vw-6 tablet:mx-vw-12"
           />
-          <Spin
-            spinning={loading}
-            className="z-50 m-auto text-primary"
-            indicator={
-              <LoadingOutlined className="font-[36px] text-primary" spin />
+          <Drawer
+            visible={Boolean(reserveDate)}
+            onClose={handleClese}
+            width={"100%"}
+            height={"95vh"}
+            placement="bottom"
+            className="z-30 sp:px-6 [&_.ant-drawer-body]:px-vw-6 [&_.ant-drawer-body]:py-1"
+            title={
+              <Typography.Text>
+                {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
+              </Typography.Text>
             }
-            size="large"
-            tip="送信中"
           >
-            <Drawer
-              visible={Boolean(reserveDate)}
-              onClose={handleClese}
-              width={"100%"}
-              height={"95vh"}
-              placement="bottom"
-              className="z-30 [&_.ant-drawer-body]:py-1"
-              title={
-                <Typography.Text>
-                  {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
-                </Typography.Text>
-              }
+            <Swiper
+              onInit={(core: SwiperCore) => (swiperRef.current = core.el)}
+              loop={true}
+              slidesPerView={1}
+              onSlideNextTransitionStart={handleSlideNext}
+              onSlidePrevTransitionStart={handleSlidePrev}
             >
-              <Swiper
-                onInit={(core: SwiperCore) => {
-                  swiperRef.current = core.el;
-                }}
-                loop={true}
-                slidesPerView={1}
-                onSlideNextTransitionStart={handleSlideNext}
-                onSlidePrevTransitionStart={handleSlidePrev}
-              >
-                <SwiperSlide>
-                  <div className={calendarClass}>
-                    <Calendar
-                      events={events.map((event, index) => ({
-                        id: index,
-                        title: event.name,
-                        start: new Date(
-                          new Date(event.start.replace(" ", "T"))
-                        ),
-                        end: new Date(new Date(event.end.replace(" ", "T"))),
-                      }))}
-                      step={30}
-                      views={["day"]}
-                      defaultView="day"
-                      localizer={localizer}
-                      timeslots={2}
-                      date={new Date(reserveDate)}
-                      onNavigate={handleNavigate}
-                      min={
-                        new Date(
-                          minDate.slice(0, 4),
-                          minDate.slice(4, 6),
-                          minDate.slice(6, 8),
-                          10,
-                          0,
-                          0
-                        )
-                      }
-                      max={
-                        new Date(
-                          parseInt(maxDate.slice(0, 4), 10),
-                          parseInt(maxDate.slice(4, 6), 10),
-                          parseInt(maxDate.slice(6, 8), 10),
-                          23,
-                          0,
-                          0
-                        )
-                      }
-                      eventPropGetter={() => ({
-                        className:
-                          "odd:bg-slate-500/70 even:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
-                      })}
-                      onSelectEvent={handleSelectEvent}
-                      formats={{
-                        dayHeaderFormat: (
-                          date: any,
-                          culture: any,
-                          localizer: {
-                            format: (arg0: any, arg1: string, arg2: any) => any;
-                          }
-                        ) =>
-                          localizer.format(date, "M[月] D[日] dddd", culture),
-                      }}
-                    />
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className={calendarClass}>
-                    <Calendar
-                      events={events.map((event, index) => ({
-                        id: index,
-                        title: event.name,
-                        start: new Date(
-                          new Date(event.start.replace(" ", "T"))
-                        ),
-                        end: new Date(new Date(event.end.replace(" ", "T"))),
-                      }))}
-                      step={30}
-                      views={["day"]}
-                      defaultView="day"
-                      localizer={localizer}
-                      timeslots={2}
-                      date={new Date(reserveDate)}
-                      onNavigate={handleNavigate}
-                      min={
-                        new Date(
-                          parseInt(minDate.slice(0, 4), 10),
-                          parseInt(minDate.slice(4, 6), 10),
-                          parseInt(minDate.slice(6, 8), 10),
-                          10,
-                          0,
-                          0
-                        )
-                      }
-                      max={
-                        new Date(
-                          parseInt(maxDate.slice(0, 4), 10),
-                          parseInt(maxDate.slice(4, 6), 10),
-                          parseInt(maxDate.slice(6, 8), 10),
-                          23,
-                          0,
-                          0
-                        )
-                      }
-                      eventPropGetter={() => ({
-                        className:
-                          "even:bg-slate-500/70 odd:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
-                      })}
-                      onSelectEvent={handleSelectEvent}
-                      formats={{
-                        dayHeaderFormat: (
-                          date: any,
-                          culture: any,
-                          localizer: {
-                            format: (arg0: any, arg1: string, arg2: any) => any;
-                          }
-                        ) =>
-                          localizer.format(date, "M[月] D[日] dddd", culture),
-                      }}
-                    />
-                  </div>
-                </SwiperSlide>
-              </Swiper>
-            </Drawer>
-            <Modal
-              zIndex={30}
-              visible={reserveDialog}
-              closable={true}
-              maskClosable={true}
-              onCancel={handleCancel}
-              footer={null}
+              <SwiperSlide>
+                <div className={calendarClass}>
+                  <Calendar
+                    events={events.map((event, index) => ({
+                      id: index,
+                      title: event.name,
+                      start: new Date(new Date(event.start.replace(" ", "T"))),
+                      end: new Date(new Date(event.end.replace(" ", "T"))),
+                    }))}
+                    step={30}
+                    views={["day"]}
+                    defaultView="day"
+                    localizer={localizer}
+                    timeslots={2}
+                    date={new Date(reserveDate)}
+                    onNavigate={handleNavigate}
+                    min={
+                      new Date(
+                        minDate.slice(0, 4),
+                        minDate.slice(4, 6),
+                        minDate.slice(6, 8),
+                        10,
+                        0,
+                        0
+                      )
+                    }
+                    max={
+                      new Date(
+                        parseInt(maxDate.slice(0, 4), 10),
+                        parseInt(maxDate.slice(4, 6), 10),
+                        parseInt(maxDate.slice(6, 8), 10),
+                        23,
+                        0,
+                        0
+                      )
+                    }
+                    eventPropGetter={(event) => ({
+                      className:
+                        "odd:bg-slate-500/70 even:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
+                      key: event.id,
+                    })}
+                    onSelectEvent={handleSelectEvent}
+                    formats={{
+                      dayHeaderFormat: (
+                        date: any,
+                        culture: any,
+                        localizer: {
+                          format: (arg0: any, arg1: string, arg2: any) => any;
+                        }
+                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
+                    }}
+                  />
+                </div>
+              </SwiperSlide>
+              <SwiperSlide>
+                <div className={calendarClass}>
+                  <Calendar
+                    events={events.map((event, index) => ({
+                      id: index,
+                      title: event.name,
+                      start: new Date(new Date(event.start.replace(" ", "T"))),
+                      end: new Date(new Date(event.end.replace(" ", "T"))),
+                    }))}
+                    step={30}
+                    views={["day"]}
+                    defaultView="day"
+                    localizer={localizer}
+                    timeslots={2}
+                    date={new Date(reserveDate)}
+                    onNavigate={handleNavigate}
+                    min={
+                      new Date(
+                        parseInt(minDate.slice(0, 4), 10),
+                        parseInt(minDate.slice(4, 6), 10),
+                        parseInt(minDate.slice(6, 8), 10),
+                        10,
+                        0,
+                        0
+                      )
+                    }
+                    max={
+                      new Date(
+                        parseInt(maxDate.slice(0, 4), 10),
+                        parseInt(maxDate.slice(4, 6), 10),
+                        parseInt(maxDate.slice(6, 8), 10),
+                        23,
+                        0,
+                        0
+                      )
+                    }
+                    eventPropGetter={(event) => ({
+                      className:
+                        "even:bg-slate-500/70 odd:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
+                      key: event.id,
+                    })}
+                    onSelectEvent={handleSelectEvent}
+                    formats={{
+                      dayHeaderFormat: (
+                        date: any,
+                        culture: any,
+                        localizer: {
+                          format: (arg0: any, arg1: string, arg2: any) => any;
+                        }
+                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
+                    }}
+                  />
+                </div>
+              </SwiperSlide>
+            </Swiper>
+          </Drawer>
+          <Modal
+            zIndex={30}
+            visible={reserveDialog}
+            closable={true}
+            maskClosable={true}
+            onCancel={handleCancel}
+            footer={null}
+          >
+            <Spin
+              spinning={loading}
+              className="z-50 text-primary"
+              indicator={
+                <LoadingOutlined className="font-[36px] text-primary" spin />
+              }
+              size="large"
+              tip="送信中"
             >
               <Form
                 form={form}
@@ -742,8 +738,8 @@ export default function Idex(props: {
                   </Button>
                 </Form.Item>
               </Form>
-            </Modal>
-          </Spin>
+            </Spin>
+          </Modal>
           <Modal
             visible={Boolean(errorDialogMessage.title)}
             onCancel={handleErrorModalClick}
