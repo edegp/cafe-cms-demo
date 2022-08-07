@@ -396,7 +396,7 @@ export default function Idex(props: {
             value > moment(minDate) &&
             value < moment(maxDate) ? (
               status === 3 ? (
-                <Typography.Link className="text-red-600/80 inline-block mt-3">
+                <Typography.Link className="mt-3 inline-block text-red-600/80">
                   {t.calendar.full}
                 </Typography.Link>
               ) : status === 2 ? (
@@ -418,10 +418,7 @@ export default function Idex(props: {
                   </div>
                 </>
               ) : (
-                <Typography.Link
-                  type="link"
-                  className="text-red-500/80 inline-block mt-3"
-                >
+                <Typography.Link className="mt-3 inline-block text-red-500/80">
                   {t.calendar.closingday}
                 </Typography.Link>
               )
