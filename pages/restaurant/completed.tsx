@@ -8,12 +8,14 @@ import {
 import { Button, Card, Col, Layout, Row, Typography } from "antd";
 import { Content, Footer, Header } from "antd/lib/layout/layout";
 import Link from "next/link";
+import Router, { useRouter } from "next/router";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "store";
 import { weekdayName } from "utils/helpers";
 
 const Completed = () => {
+  const router = useRouter();
   // eslint-disable-next-line react-redux/useSelector-prefer-selectors
   const { t, message } = useSelector((state: RootState) => state);
   let yyyymmdd = message.day;
@@ -21,6 +23,7 @@ const Completed = () => {
   const date = `${datelist[0]}年${datelist[1]}月${datelist[2]}日`;
   let yyymmdd = new Date(message.day.replace(/-/g, "/"));
   const weekday = weekdayName(yyymmdd.getDay());
+  if (!message.start) router.push("/restaurant");
   return (
     <Layout className="h-[100vh] bg-[url('https://media.istockphoto.com/photos/reserved-sign-on-restaurant-table-with-bar-background-picture-id912129754')] bg-cover bg-center bg-no-repeat">
       <Typography className="mx-1 mt-[20vh] bg-stone-400/[0.55] text-center text-md font-bold text-white ">

@@ -11,7 +11,7 @@ import {
   Space,
 } from "antd";
 import { Content, Footer, Header } from "antd/lib/layout/layout";
-import { EnvironmentOutlined } from "@ant-design/icons";
+import { EnvironmentOutlined, LeftOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import React, { useState } from "react";
 import { weekdayName } from "utils/helpers";
@@ -184,6 +184,12 @@ const Areas = ({ areas, restaurants }) => {
             </Space>
           </Row>
         </Content>
+        <Footer className="fixed bottom-0 w-full text-center">
+          <Button className="inline-flex justify-center align-middle">
+            <LeftOutlined />
+            カルディ非公式ホームページに戻る
+          </Button>
+        </Footer>
       </Layout>
     </>
   );

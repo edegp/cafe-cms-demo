@@ -156,7 +156,6 @@ export default function Idex(props: {
             ? setCourse.name
             : t.calendar.msg014,
       };
-
       try {
         // 予約申込送信
         const data = await updateReserve(
