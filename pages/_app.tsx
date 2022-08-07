@@ -91,7 +91,19 @@ function MyApp({ Component, pageProps }) {
     return (
       <>
         <Provider store={store}>
-          <PersistGate loading={<div>loading...</div>} persistor={persistor}>
+          <PersistGate
+            loading={
+              <Spin
+                className="absolute top-1/2 z-50 mx-auto text-primary"
+                indicator={
+                  <LoadingOutlined className="font-[36px] text-primary" spin />
+                }
+                size="large"
+                tip="送信中"
+              />
+            }
+            persistor={persistor}
+          >
             <RestaurantLayout>
               <Component {...pageProps} />
             </RestaurantLayout>
