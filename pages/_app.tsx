@@ -63,8 +63,8 @@ function MyApp({ Component, pageProps }) {
                 liff.login({
                   redirectUri:
                     router.pathname == "/restaurant/delete"
-                      ? `${window.location.origin}/delete`
-                      : `${window.location.origin}`,
+                      ? `${window.location.origin}/restaurant/delete`
+                      : `${window.location.origin}/restaurant`,
                 });
               }
               store.dispatch(setFlash({ LIFF_INITED: true }));
