@@ -75,7 +75,7 @@ const Areas = ({ areas, restaurants }) => {
             予約　店舗選択
           </Typography.Title>
         </Header>
-        <Content className="m-[2.5%] bg-white mb-24">
+        <Content className="m-[2.5%] mb-24 bg-white">
           <Row>
             <Space direction="vertical" size="middle" className="flex w-full">
               {areas.map((area) => (
@@ -196,7 +196,10 @@ const Areas = ({ areas, restaurants }) => {
           </Row>
         </Content>
         <Footer className="fixed bottom-0 w-full text-center">
-          <Button className="inline-flex justify-center items-center active:border-primary active:text-primary  hover:border-primary hover:text-primary hover:opacity-75 hover:shadow-lg hover:top-[-2px]">
+          <Button
+            href="/"
+            className="inline-flex items-center justify-center hover:top-[-2px] hover:border-primary  hover:text-primary hover:opacity-75 hover:shadow-lg active:border-primary active:text-primary"
+          >
             <LeftOutlined />
             カルディ非公式ホームページに戻る
           </Button>
