@@ -321,7 +321,7 @@ export default function Idex(props: {
         );
       }
       return (
-        <div key={value.format()} className=" p-8">
+        <div key={value.format()} className="py-8">
           <Typography.Title level={4} className="my-vw-8 text-center">
             <span className="line-color">
               <span className="hidden-xs-only">
@@ -755,7 +755,7 @@ export default function Idex(props: {
             </Typography>
           </Modal>
         </Layout.Content>
-        <Footer className="flex bg-white">
+        <Footer className="flex bg-white pl-vw-6">
           <Button className="mr-vw-8 border-zinc-600 bg-white text-zinc-600">
             <Link href="/restaurant" passHref>
               予約TOPへ
