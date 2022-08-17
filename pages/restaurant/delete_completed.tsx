@@ -23,7 +23,7 @@ const Delete_completed = () => {
   let yyymmdd = new Date(message.day.replace(/-/g, "/"));
   const weekday = weekdayName(yyymmdd.getDay());
   return (
-    <Layout className="h-[100vh] bg-[url('https://media.istockphoto.com/photos/reserved-sign-on-restaurant-table-with-bar-background-picture-id912129754')] bg-cover bg-center bg-no-repeat">
+    <Layout className="h-[100vh] bg-[url('https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80')] bg-cover bg-center bg-no-repeat">
       <Typography className="mx-1 mt-[20vh] bg-stone-400/[0.55] text-center text-md font-bold text-white ">
         {t.delete_completed.msg001.replace("{name}", message?.name)}
         {t.delete_completed.msg002}

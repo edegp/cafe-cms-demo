@@ -6,7 +6,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 const nextConfig = {
   images: {
-    domains: ["images.microcms-assets.io", "media.istockphoto.com"],
+    domains: ["images.microcms-assets.io", "images.unsplash.com"],
   },
   reactStrictMode: true,
   sassOptions: {

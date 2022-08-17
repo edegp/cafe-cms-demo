@@ -98,7 +98,7 @@ const Delete = ({ shopInfo, locale }) => {
       <Layout className="h-full min-h-screen bg-white">
         <Header className="relative h-[30vh]">
           <Image
-            src="https://media.istockphoto.com/photos/stylish-dinner-picture-id1178092305"
+            src="https://images.unsplash.com/photo-1593510987046-1f8fcfc512a0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"
             alt="Restaurant"
             layout="fill"
             objectFit="cover"
