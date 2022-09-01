@@ -81,13 +81,35 @@ function MyApp({ Component, pageProps }) {
     if (router.pathname.startsWith("/restaurant")) Initialize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message, router]);
+  useEffect(() => {
+    router.events.on("routeChangeStart", () =>
+      store.dispatch(setIsLoading(true))
+    );
+    router.events.on("routeChangeComplete", () =>
+      store.dispatch(setIsLoading(false))
+    );
+    router.events.on("routeChangeError", () =>
+      store.dispatch(setIsLoading(false))
+    );
+    return () => {
+      router.events.off("routeChangeStart", () =>
+        store.dispatch(setIsLoading(true))
+      );
+      router.events.off("routeChangeComplete", () =>
+        store.dispatch(setIsLoading(false))
+      );
+      router.events.off("routeChangeError", () =>
+        store.dispatch(setIsLoading(false))
+      );
+    };
+  }, [router]);
   if (isLoading)
     return (
       <Spin
-        tip="Loading..."
-        className="absolute  left-1/2 top-1/2  mx-auto text-primary"
+        tip='Loading...'
+        className='absolute  inset-1/2  mx-auto text-primary'
       >
-        <LoadingOutlined className="font-[36px] text-primary" spin />
+        <LoadingOutlined className='font-[36px] text-primary' spin />
       </Spin>
     );
   if (router.pathname.startsWith("/restaurant"))
@@ -97,12 +119,12 @@ function MyApp({ Component, pageProps }) {
           <PersistGate
             loading={
               <Spin
-                className="absolute left-1/2 top-1/2 z-50 mx-auto text-primary"
+                className='absolute left-1/2 top-1/2 z-50 mx-auto text-primary'
                 indicator={
-                  <LoadingOutlined className="font-[36px] text-primary" spin />
+                  <LoadingOutlined className='font-[36px] text-primary' spin />
                 }
-                size="large"
-                tip="送信中"
+                size='large'
+                tip='送信中'
               />
             }
             persistor={persistor}
