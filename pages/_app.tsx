@@ -10,7 +10,6 @@ import {
   store,
   setStarted,
   setLocale,
-  setLineUser,
   setFlash,
   setT,
   persistor,
@@ -79,8 +78,8 @@ function MyApp({ Component, pageProps }) {
   };
   useEffect(() => {
     if (router.pathname.startsWith("/restaurant")) Initialize();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [message, router]);
+  }, [message]);
+
   useEffect(() => {
     router.events.on("routeChangeStart", () =>
       store.dispatch(setIsLoading(true))
@@ -105,10 +104,7 @@ function MyApp({ Component, pageProps }) {
   }, [router]);
   if (isLoading)
     return (
-      <Spin
-        tip='Loading...'
-        className='absolute  inset-1/2  mx-auto text-primary'
-      >
+      <Spin tip='Loading...' className='fixed top-1/3 text-primary'>
         <LoadingOutlined className='font-[36px] text-primary' spin />
       </Spin>
     );

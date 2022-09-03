@@ -1,4 +1,3 @@
-
 import {
   createSlice,
   configureStore,
@@ -55,124 +54,21 @@ type LineUser = {
   token: string;
   idToken: string;
 };
-type T = {
-  type: string;
-  language: string;
-  title: string;
-  top: {
-    title: string;
-    msg001: string;
-    msg002: string;
-    msg003: string;
-    msg004: string;
-    msg005: string;
-    msg006: string;
-  };
-  delete: { title: string; msg001: string };
-  areas: {
-    msg001: string;
-    msg002: string;
-    msg003: string;
-    msg004: string;
-    msg005: string;
-    msg006: string;
-    msg007: string;
-  };
-  calendar: {
-    vacant: string;
-    vacant_little: string;
-    full: string;
-    short_vacant: string;
-    short_vacant_little: string;
-    short_full: string;
-    closingday: string;
-    short_closingday: string;
-    vacancy: string;
-    msg001: string;
-    msg002: string;
-    msg003: string;
-    msg004: string;
-    msg005: string;
-    msg006: string;
-    msg007: string;
-    msg008: string;
-    msg009: string;
-    msg010: string;
-    msg011: string;
-    msg012: string;
-    msg013: string;
-    msg014: string;
-    msg015: string;
-    msg016: string;
-    msg017: string;
-  };
-  completed: {
-    msg001: string;
-    msg002: string;
-    msg003: string;
-    msg004: string;
-    msg005: string;
-    msg006: string;
-    msg007: string;
-    msg008: string;
-    msg009: string;
-    msg010: string;
-    msg011: string;
-    msg012: string;
-    msg013: string;
-    yyyymmdd: string;
-  };
-  delete_completed: {
-    msg001: string;
-    msg002: string;
-    msg003: string;
-    msg004: string;
-    msg005: string;
-    msg006: string;
-    msg007: string;
-    msg008: string;
-    msg009: string;
-    msg010: string;
-    msg011: string;
-    msg012: string;
-    msg013: string;
-    yyyymmdd: string;
-  };
-  footer: {
-    shop: string;
-    day: string;
-    selection: string;
-  };
-  utils: {
-    sun: string;
-    mon: string;
-    tue: string;
-    wed: string;
-    thu: string;
-    fri: string;
-    sat: string;
-    hol: string;
-  };
-  restaurant: {
-    yen: string;
-    yyyymm: string;
-    allowed: string;
-    not_allowed: string;
-    no_course: string;
-    vacant: string;
-    vacant_little: string;
-    full: string;
-  };
-  error: {
-    msg001: string;
-    msg002: string;
-    msg003: string;
-    msg004: string;
-    msg005: string;
-  };
+export type T = {
+  [x: string]: string | Object;
+  top: { [key: string]: string };
+  delete: { [key: string]: string };
+  areas: { [key: string]: string };
+  calendar: { [key: string]: string };
+  completed: { [key: string]: string };
+  delete_completed: { [key: string]: string };
+  footer: { [key: string]: string };
+  utils: { [key: string]: string };
+  restaurant: { [key: string]: string };
+  error: { [key: string]: string };
 };
 
-type State = {
+export type State = {
   message?: Message | null;
   started?: string;
   locales?: string[];
@@ -229,8 +125,8 @@ const restaurantSlice = createSlice({
   name: "reserve",
   initialState,
   reducers: {
-    HYDRATE: (state, action) => ({ ...state, ...action.payload }),
-    TICK: (state, action) => ({ ...state, tick: action.payload }),
+    // HYDRATE: (state, action) => ({ ...state, ...action.payload }),
+    // TICK: (state, action) => ({ ...state, tick: action.payload }),
     clear: (state) => ({
       ...state,
       message: null,
@@ -313,7 +209,10 @@ export type AppDispatch = typeof store.dispatch;
 const listenerMiddleware = createListenerMiddleware();
 
 listenerMiddleware.startListening({
-  matcher: isAnyOf(setFlash, setIsLoading),
+  // @ts-ignore
+  predicate: (action: AnyAction, currentState: State, previousState: State) => {
+    return currentState.isLoading === true || currentState.message?.LIFF_INITED;
+  },
   effect: (action, listenerApi) => {
     const { lineUser, message }: State = listenerApi.getState();
     if (message?.LIFF_INITED) {

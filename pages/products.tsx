@@ -63,15 +63,15 @@ const plans = [
 ];
 const ProductPage = ({ data }) => {
   return (
-    <Layout title="商品紹介" description="カルディの商品紹介ページ">
-      <div className="content">
-        <FullWidthImage img={HeroImage} title={title} imgPosition="bottom" />
-        <section className="section section--gradient">
-          <div className="container">
-            <div className="section">
-              <div className="grid">
-                <div className="basis-7/12">
-                  <h3 className="text-xl font-semibold">
+    <Layout title='商品紹介' description='カルディの商品紹介ページ'>
+      <div className='content'>
+        <FullWidthImage img={HeroImage} title={title} imgPosition='bottom' />
+        <section className='section section--gradient'>
+          <div className='container'>
+            <div className='section'>
+              <div className='grid'>
+                <div className='basis-7/12'>
+                  <h3 className='text-xl font-semibold'>
                     良心とともに素晴らしいコーヒーを
                   </h3>
                   <p>
@@ -80,12 +80,12 @@ const ProductPage = ({ data }) => {
                   </p>
                 </div>
               </div>
-              <div className="grid">
-                <div className="column basis-10/12">
+              <div className='grid'>
+                <div className='column basis-10/12'>
                   <Features gridItems={blurbs} />
-                  <div className="columns flex flex-row">
-                    <div className="column is-7">
-                      <h3 className="text-3xl font-semibold">
+                  <div className='columns flex flex-row'>
+                    <div className='column is-7'>
+                      <h3 className='text-3xl font-semibold'>
                         妥協のないすぐれたコーヒー
                       </h3>
                       <p>
@@ -95,42 +95,42 @@ const ProductPage = ({ data }) => {
                       </p>
                     </div>
                   </div>
-                  <div className="grid grid-rows-3 gap-6">
-                    <article className=" col-span-1 row-span-1 overflow-hidden rounded-lg">
+                  <div className='grid grid-rows-3 gap-6'>
+                    <article className=' col-span-1 row-span-1 overflow-hidden rounded-lg'>
                       <Image
-                        alt="プロダクト1"
+                        alt='プロダクト1'
                         quality={80}
                         src={Main1}
-                        width="996px"
-                        height="661px"
-                        layout="responsive"
-                        objectFit="cover"
+                        width='996px'
+                        height='661px'
+                        layout='responsive'
+                        objectFit='cover'
                       />
                     </article>
-                    <article className=" col-span-1 row-span-1 overflow-hidden rounded-lg">
+                    <article className=' col-span-1 row-span-1 overflow-hidden rounded-lg'>
                       <Image
-                        alt="プロダクト2"
+                        alt='プロダクト2'
                         src={Main2}
-                        width="996px"
-                        height="661px"
-                        layout="responsive"
-                        objectFit="cover"
+                        width='996px'
+                        height='661px'
+                        layout='responsive'
+                        objectFit='cover'
                       />
                     </article>
-                    <div className=" is-parent col-span-2 row-span-2">
-                      <article className="tile overflow-hidden rounded-lg">
+                    <div className=' is-parent col-span-2 row-span-2'>
+                      <article className='tile overflow-hidden rounded-lg'>
                         <Image
-                          alt="プロダクト3"
+                          alt='プロダクト3'
                           src={Main3}
-                          width="996px"
-                          height="661px"
-                          objectFit="cover"
+                          width='996px'
+                          height='661px'
+                          objectFit='cover'
                         />
                       </article>
                     </div>
                   </div>
                   <Testimonials
-                    className="mb-5"
+                    className='mb-5'
                     testimonials={[
                       {
                         author: "エリザベス・カウリスマキ",
@@ -145,8 +145,8 @@ const ProductPage = ({ data }) => {
                     ]}
                   />
                   <FullWidthImage img={fullImage} imgPosition={"bottom"} />
-                  <h2 className="text-2xl font-semibold">サブスクリプション</h2>
-                  <p className="text-sm">
+                  <h2 className='text-2xl font-semibold'>サブスクリプション</h2>
+                  <p className='text-sm'>
                     私たちはあなたの人生の一部として素晴らしいコーヒーを作るのを簡単にします。
                     毎月のサブスクリプションプランの1つを選択して、毎月玄関先でおいしいコーヒーを受け取ります。
                     詳細とお支払い情報についてはお問い合わせください。
@@ -157,16 +157,6 @@ const ProductPage = ({ data }) => {
             </div>
           </div>
         </section>
-
-        {/* <section className="section section--gradient">
-          <div className="container">
-            <div className="section">
-              <div className="columns flex flex-row ">
-                <div className="column is-10"></div>
-              </div>
-            </div>
-          </div>
-        </section> */}
       </div>
     </Layout>
   );

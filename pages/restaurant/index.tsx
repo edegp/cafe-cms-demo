@@ -1,3 +1,4 @@
+/* eslint-disable tailwindcss/no-custom-classname */
 import {
   Col,
   Collapse,
@@ -19,16 +20,16 @@ import { openMapApp } from "utils/helpers";
 import { getAreaShops } from "utils/helpers";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
-import { store, setT, setFlash, RootState } from "store";
+import { store, setT, setFlash, RootState, State } from "store";
 import Head from "next/head";
 
 const { Panel } = Collapse;
 
-const Areas = ({ areas, restaurants }) => {
+export default function Areas({ areas, restaurants }) {
   const router = useRouter();
   const dispatch = useDispatch();
   // eslint-disable-next-line react-redux/useSelector-prefer-selectors
-  const t = useSelector((state: RootState) => state.t);
+  const t = useSelector((state: State) => state.t);
   const weekdayNames = (weekdays) => {
     let names = "";
     if (typeof weekdays == "object") {
@@ -65,33 +66,32 @@ const Areas = ({ areas, restaurants }) => {
       <Head>
         <title>カルディ予約　店舗選択ページ</title>
       </Head>
-      <Layout title="カルディ予約　店舗選択ページ" className="bg-white">
-        <Header className="flex bg-primary text-center">
+      <Layout title='カルディ予約　店舗選択ページ' className='bg-white'>
+        <Header className='flex bg-primary text-center'>
           <Typography.Title
             level={2}
-            // eslint-disable-next-line tailwindcss/no-custom-classname
-            className="font-[Yu Mincho] mb-0 self-center text-white"
+            className='font-[Yu Mincho] mb-0 self-center text-white'
           >
             予約　店舗選択
           </Typography.Title>
         </Header>
-        <Content className="m-[2.5%] mb-24 bg-white">
+        <Content className='m-[2.5%] mb-24 bg-white'>
           <Row>
-            <Space direction="vertical" size="middle" className="flex w-full">
+            <Space direction='vertical' size='middle' className='flex w-full'>
               {areas.map((area) => (
-                <Collapse key={area.name} className="w-full">
+                <Collapse key={area.name} className='w-full'>
                   <Panel
                     key={area.name}
                     header={
-                      <Typography.Text className="font-semibold">
+                      <Typography.Text className='font-semibold'>
                         {area.name}
                       </Typography.Text>
                     }
                   >
                     <Row
                       gutter={[16, 32]}
-                      justify="space-evenly"
-                      className="mx-[2.5%]"
+                      justify='space-evenly'
+                      className='mx-[2.5%]'
                     >
                       {restaurants[area.code].map((restaurant) => (
                         <Col
@@ -105,20 +105,20 @@ const Areas = ({ areas, restaurants }) => {
                             hoverable
                             onClick={() => reserve(area, restaurant)}
                             title={
-                              <Typography.Text className="font-semibold">
+                              <Typography.Text className='font-semibold'>
                                 {restaurant.name}
                               </Typography.Text>
                             }
                           >
-                            <Row gutter={8} align="middle">
+                            <Row gutter={8} align='middle'>
                               <Col xs={24} md={13}>
                                 <Image
                                   src={restaurant.img}
-                                  layout="responsive"
-                                  width="1024"
-                                  height="667"
-                                  objectFit="contain"
-                                  alt="LINE Shop"
+                                  layout='responsive'
+                                  width='1024'
+                                  height='667'
+                                  objectFit='contain'
+                                  alt='LINE Shop'
                                 />
                               </Col>
                               <Col xs={24} md={9} offset={2}>
@@ -160,7 +160,7 @@ const Areas = ({ areas, restaurants }) => {
                                         openLineOA(restaurant.line)
                                       }
                                       onMouseDown={() => mousedownCard(2)}
-                                      className="text-line hover:border-line"
+                                      className='text-line hover:border-line'
                                     >
                                       {t.areas.msg007}
                                     </Button>
@@ -172,10 +172,10 @@ const Areas = ({ areas, restaurants }) => {
                                   </List.Item>
                                 </List>
                               </Col>
-                              <div className="flex items-center">
+                              <div className='flex items-center'>
                                 <EnvironmentOutlined />
                                 <Button
-                                  type="link"
+                                  type='link'
                                   onClick={() =>
                                     openMap(restaurant.name, restaurant.map)
                                   }
@@ -195,10 +195,10 @@ const Areas = ({ areas, restaurants }) => {
             </Space>
           </Row>
         </Content>
-        <Footer className="fixed bottom-0 w-full text-center">
+        <Footer className='fixed bottom-0 w-full text-center'>
           <Button
-            href="/"
-            className="inline-flex items-center justify-center hover:top-[-2px] hover:border-primary  hover:text-primary hover:opacity-75 hover:shadow-lg active:border-primary active:text-primary"
+            href='/'
+            className='inline-flex items-center justify-center hover:top-[-2px] hover:border-primary  hover:text-primary hover:opacity-75 hover:shadow-lg active:border-primary active:text-primary'
           >
             <LeftOutlined />
             カルディ非公式ホームページに戻る
@@ -207,9 +207,7 @@ const Areas = ({ areas, restaurants }) => {
       </Layout>
     </>
   );
-};
-
-export default Areas;
+}
 
 export const getStaticProps = async ({ locale }) => {
   store.dispatch(setT(locale));

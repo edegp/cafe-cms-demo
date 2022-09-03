@@ -8,7 +8,7 @@ const nextConfig = {
   images: {
     domains: ["images.microcms-assets.io", "images.unsplash.com"],
   },
-  reactStrictMode: true,
+  reactStrictMode: false,
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },

@@ -3,32 +3,17 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-// const htmlToText = (html) => {
-//   const getNodes = function* (doc, filter) {
-//     const iter = doc.createNodeIterator(doc, filter);
-//     let node;
-//     while ((node = iter.nextNode()) !== null) {
-//       yield node;
-//     }
-//   };
-
-//   const doc = new DOMParser().parseFromString(html, "text/html");
-//   return Array.from(
-//     getNodes(doc, NodeFilter.SHOW_TEXT),
-//     (x) => x.nodeValue
-//   ).join("");
-// };
 export default function BlogRoll({ blogs }) {
   return (
-    <div className="grid grid-cols-1 gap-6  laptop:grid-cols-2">
+    <div className='grid grid-cols-1 gap-6  laptop:grid-cols-2'>
       {blogs &&
         blogs.map((blog) => (
           <div key={blog.id}>
-            <article className="blog-list-item box notification bg-amber-700/20 ">
+            <article className='blog-list-item box notification bg-amber-700/20 '>
               <header>
                 {blog.eyecatch ? (
-                  <div className="featured-thumbnail h-full">
-                    <div className="w-full min-w-[40px] max-w-[120px] first:overflow-hidden first:rounded-sm">
+                  <div className='featured-thumbnail h-full'>
+                    <div className='w-full min-w-[40px] max-w-[120px] first:overflow-hidden first:rounded-sm'>
                       <Image
                         src={blog.eyecatch.url}
                         width={blog.eyecatch.width}
@@ -38,12 +23,12 @@ export default function BlogRoll({ blogs }) {
                     </div>
                   </div>
                 ) : null}
-                <p className="post-meta">
+                <div className='post-meta'>
                   <Link href={`/blog/${blog.id}`}>
-                    <a className="title text-sm text-primary">{blog.title}</a>
+                    <a className='title text-sm text-primary'>{blog.title}</a>
                   </Link>
                   <br />
-                  <span className="subtitle block text-xs">
+                  <span className='subtitle block text-xs'>
                     {blog.publishedAt
                       ?.split("T")[0]
                       .split("-")
@@ -55,19 +40,19 @@ export default function BlogRoll({ blogs }) {
                           : i === 2 && e + "日"
                       )}
                   </span>
-                </p>
+                </div>
               </header>
-              <p className="text-xs">
+              <div className='text-xs'>
                 {blog.content
                   .match(/[^\<\>]+(?=\<[^\<\>]+\>)|[^\<\>]+$/g)
                   .join(" ")
                   .substr(0, 150) + "…"}
                 <br />
                 <br />
-                <Link className="button" href={`/blog/${blog.id}`}>
+                <Link className='button' href={`/blog/${blog.id}`}>
                   続きを読む →
                 </Link>
-              </p>
+              </div>
             </article>
           </div>
         ))}

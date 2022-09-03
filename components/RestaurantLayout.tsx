@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import ErrorModal from "components/ErrorModal";
-import { useSelector } from "react-redux";
-import { RootState } from "store";
+import { store } from "store";
 
 const RestaurantLayout = ({ children }) => {
-  // eslint-disable-next-line react-redux/useSelector-prefer-selectors
-  const lineUser = useSelector((state: RootState) => state.lineUser);
+  const { lineUser } = store.getState();
   const wrap = lineUser ? "wrap" : "hidden";
   return (
     <div className={wrap}>
