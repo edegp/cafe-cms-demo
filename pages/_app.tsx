@@ -102,12 +102,7 @@ function MyApp({ Component, pageProps }) {
       );
     };
   }, [router]);
-  if (isLoading)
-    return (
-      <Spin tip='Loading...' className='fixed top-1/3 text-primary'>
-        <LoadingOutlined className='font-[36px] text-primary' spin />
-      </Spin>
-    );
+
   if (router.pathname.startsWith("/restaurant"))
     return (
       <>

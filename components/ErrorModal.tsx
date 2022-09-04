@@ -2,11 +2,12 @@
 import React from "react";
 import { Button, Card, Modal, Typography } from "antd";
 import { ExclamationCircleOutlined, CloseOutlined } from "@ant-design/icons";
-import { setAxiosError, store } from "store";
+import { setAxiosError, State, store } from "store";
+import { useSelector } from "react-redux";
 
 const ErrorModal = () => {
-  const state = store.getState();
-  const { axiosError, t } = state;
+  // eslint-disable-next-line react-redux/useSelector-prefer-selectors
+  const { axiosError, t } = useSelector((state: State) => state);
   const reload = () => {
     location.reload();
     return;
