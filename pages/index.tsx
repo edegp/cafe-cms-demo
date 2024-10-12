@@ -1,25 +1,25 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import axios from "axios";
-import { client } from "libs/client";
-import { Rate, Card, Avatar, Row, Col, Button } from "antd";
-import Layout from "components/Layout";
-import Features from "components/Features";
-import BlogRoll from "components/BlogRoll";
-import FullWidthImage from "components/FullWidthImage";
-import HeroImage from "public/img/home-jumbotron.jpg";
-import Coffee from "public/img/coffee.png";
-import Gear from "public/img/coffee-gear.png";
-import Tutorials from "public/img/tutorials.png";
-import Meeting from "public/img/meeting-space.png";
-import { Layout as AntdLayout } from "antd";
-import { Content } from "antd/lib/layout/layout";
-import { Typography } from "antd";
-import { blogs } from "types/cms-types";
+import React, { useState, useEffect } from "react"
+import Link from "next/link"
+import axios from "axios"
+import { client } from "libs/client"
+import { Rate, Card, Avatar, Row, Col, Button } from "antd"
+import Layout from "components/Layout"
+import Features from "components/Features"
+import BlogRoll from "components/BlogRoll"
+import FullWidthImage from "components/FullWidthImage"
+import HeroImage from "public/img/home-jumbotron.jpg"
+import Coffee from "public/img/coffee.png"
+import Gear from "public/img/coffee-gear.png"
+import Tutorials from "public/img/tutorials.png"
+import Meeting from "public/img/meeting-space.png"
+import { Layout as AntdLayout } from "antd"
+import { Content } from "antd/lib/layout/layout"
+import { Typography } from "antd"
+import { blogs } from "types/cms-types"
 
-const title = "良心とともに素晴らしいコーヒーを";
-const subheading = "コーヒーを楽しみながら持続可能な農業をサポート";
+const title = "良心とともに素晴らしいコーヒーを"
+const subheading = "コーヒーを楽しみながら持続可能な農業をサポート"
 const blurbs = [
   {
     image: Coffee,
@@ -37,11 +37,17 @@ const blurbs = [
     image: Meeting,
     text: "おいしいコーヒーには人々を結びつける力があると私たちは信じています。 そのため、当店の一角を居心地の良いミーティングスペースに変え、コーヒー愛好家の仲間と交流したり、コーヒー作りのテクニックを学んだりすることにしました。 展示されている作品はすべて売りに出されています。 あなたが支払う全額はアーティストに行きます。",
   },
-];
-const IndexPage = ({ blogs, result }: {blogs: blogs<"gets">["contents"]; result: any}) => {
-  const { Link: AntdLink, Paragraph, Title } = Typography;
+]
+const IndexPage = ({
+  blogs,
+  result,
+}: {
+  blogs: blogs<"gets">["contents"]
+  result: any
+}) => {
+  const { Link: AntdLink, Paragraph, Title } = Typography
   const button =
-    "mb-vw-16 justify-self-center border-primary px-8 py-4 text-primary";
+    "mb-vw-16 justify-self-center border-primary px-8 py-4 text-primary"
   return (
     <Layout
       title="カルディ非公式　ホームページ"
@@ -131,7 +137,7 @@ const IndexPage = ({ blogs, result }: {blogs: blogs<"gets">["contents"]; result:
                         </div>
                       </Card>
                     </Col>
-                  );
+                  )
                 })}
               </Row>
             </div>
@@ -148,19 +154,19 @@ const IndexPage = ({ blogs, result }: {blogs: blogs<"gets">["contents"]; result:
         </Content>
       </AntdLayout>
     </Layout>
-  );
-};
+  )
+}
 
-export default IndexPage;
+export default IndexPage
 
 export const getStaticProps = async () => {
-  const data: blogs<"gets"> = await client.get({ endpoint: "blogs" });
+  const data: blogs<"gets"> = await client.get({ endpoint: "blogs" })
   const result = await axios
     .get(
       `https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=ChIJD3OsNGDxGGAR-ZP3DqsU1DE&key=${process.env.GOOGLE_API_KEY}`
     )
     .then((result) => result.data?.result)
-    .catch((err) => console.error(err));
+    .catch((err) => console.error(err))
   if (result === undefined) {
     return {
       props: {
@@ -170,12 +176,12 @@ export const getStaticProps = async () => {
           reviews: [],
         },
       },
-    };
+    }
   }
   return {
     props: {
       blogs: data.contents,
       result,
     },
-  };
-};
+  }
+}

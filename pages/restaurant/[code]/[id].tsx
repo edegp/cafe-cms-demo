@@ -356,7 +356,7 @@ export default function Idex(props: {
             )
           }
         } else {
-          for (let i = end; i < 12; i++) {
+          for (let i = 1; i < end; i++) {
             monthOptions.push(
               // eslint-disable-next-line tailwindcss/no-custom-classname
               <Select.Option key={i} value={i} className="month-item">
