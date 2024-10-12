@@ -47,7 +47,7 @@ Resources:
       Policies:
       - PolicyName: CloudWatchAccess
         PolicyDocument:
-          Version: 2012-10-17
+          Version: '2012-10-17'
           Statement:
           - Effect: Allow
             Action: logs:PutLogEvents
@@ -65,7 +65,7 @@ Resources:
             Resource: '*'
       - PolicyName: DynamoTableAccess
         PolicyDocument:
-          Version: 2012-10-17
+          Version: '2012-10-17'
           Statement:
           - Effect: Allow
             Action:

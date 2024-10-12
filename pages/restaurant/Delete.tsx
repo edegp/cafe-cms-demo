@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react"
 import {
   Layout,
   Form,
@@ -10,46 +10,46 @@ import {
   Typography,
   Spin,
   Button,
-} from "antd";
-import { LoadingOutlined, RightOutlined } from "@ant-design/icons";
-import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
-import { store, clearFlash, setT, setFlash, RootState } from "store";
-import { getAreaShops, deleteReserve } from "utils/helpers";
-import moment from "moment";
-import "moment/locale/ja";
-import ja from "antd/lib/locale/ja_JP";
-import CalendarLocale from "antd//lib/calendar/locale/ja_JP";
-import { useForm } from "antd/lib/form/Form";
-import { useRouter } from "next/router";
-import { Header } from "antd/lib/layout/layout";
-import Head from "next/head";
+} from "antd"
+import { LoadingOutlined, RightOutlined } from "@ant-design/icons"
+import Image from "next/image"
+import { useDispatch, useSelector } from "react-redux"
+import { store, clearFlash, setT, setFlash, RootState } from "store"
+import { getAreaShops, deleteReserve } from "utils/helpers"
+import moment from "moment"
+import "moment/locale/ja"
+import ja from "antd/lib/locale/ja_JP"
+import CalendarLocale from "antd//lib/calendar/locale/ja_JP"
+import { useForm } from "antd/lib/form/Form"
+import { useRouter } from "next/router"
+import { Header } from "antd/lib/layout/layout"
+// import Head from "next/head";
 
 const Delete = ({ shopInfo, locale }) => {
-  const router = useRouter();
-  const { Content, Footer } = Layout;
-  const [form] = useForm();
-  const [loading, setLoading] = useState(false);
+  const router = useRouter()
+  const { Content, Footer } = Layout
+  const [form] = useForm()
+  const [loading, setLoading] = useState(false)
   const [errorDialogMessage, setErrorDialogMessage] = useState({
     title: "",
     text: "",
-  });
-  const newCalendarLocale: any = CalendarLocale;
+  })
+  const newCalendarLocale: any = CalendarLocale
   // eslint-disable-next-line react-redux/useSelector-prefer-selectors
-  const { t, lineUser } = useSelector((state: RootState) => state);
-  moment.locale(locale);
+  const { t, lineUser } = useSelector((state: RootState) => state)
+  moment.locale(locale)
   // eslint-disable-next-line
-  newCalendarLocale.lang["shortWeekDays"] = Object.values(t.utils).slice(0, -1);
+  newCalendarLocale.lang["shortWeekDays"] = Object.values(t.utils).slice(0, -1)
   newCalendarLocale.lang["shortMonths"] = [...Array(12)].map(
     (_, i) => i + 1 + "月"
-  );
+  )
   newCalendarLocale.lang["monthsShort"] = [...Array(12)].map(
     (_, i) => i + 1 + "月"
-  );
-  const dispatch = useDispatch();
+  )
+  const dispatch = useDispatch()
   useEffect(() => {
-    dispatch(clearFlash);
-  }, [dispatch]);
+    dispatch(clearFlash)
+  }, [dispatch])
   const handleErrorModalClick = useCallback(
     () =>
       setErrorDialogMessage({
@@ -58,43 +58,43 @@ const Delete = ({ shopInfo, locale }) => {
         text: "",
       }),
     [errorDialogMessage]
-  );
+  )
   const handleDeleteReserve = async (input) => {
-    setLoading(true);
-    const token = lineUser.token;
-    const { shopId } = input;
-    const day = input.day.format("YYYY-MM-DD");
-    const start = input.start.format("HH:mm");
+    setLoading(true)
+    const token = lineUser.token
+    const { shopId } = input
+    const day = input.day.format("YYYY-MM-DD")
+    const start = input.start.format("HH:mm")
     try {
-      const { data } = await deleteReserve(token, day, shopId, start);
+      const { data } = await deleteReserve(token, day, shopId, start)
       const message = {
         no: data[0].reservationId,
         restaurant: { name: data[0].shopName },
         name: lineUser.name,
         day,
         start,
-      };
-      dispatch(setFlash(message));
-      await router.push("/restaurant/delete_completed");
+      }
+      dispatch(setFlash(message))
+      await router.push("/restaurant/delete_completed")
     } catch {
       setErrorDialogMessage({
         ...errorDialogMessage,
         title: "ご指定の予約が見つかりませんでした。",
         text: "条件をお確かめの上、再度お試しください",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-    return true;
-  };
-  console.log(errorDialogMessage);
+    return true
+  }
+  console.log(errorDialogMessage)
 
-  console.log(t);
+  console.log(t)
   return (
     <ConfigProvider locale={ja}>
-      <Head>
+      {/* <Head>
         <title>予約取り消しページ</title>
-      </Head>
+      </Head> */}
       <Layout className="h-full min-h-screen bg-white">
         <Header className="relative h-[30vh]">
           <Image
@@ -199,15 +199,15 @@ const Delete = ({ shopInfo, locale }) => {
         </Content>
       </Layout>
     </ConfigProvider>
-  );
-};
+  )
+}
 
-export default Delete;
+export default Delete
 
 export const getStaticProps = async ({ locale }) => {
-  await store.dispatch(setT(locale));
-  const data = await getAreaShops();
-  const restaurants = data.restaurants;
+  await store.dispatch(setT(locale))
+  const data = await getAreaShops()
+  const restaurants = data.restaurants
   const shopInfo = Object.keys(restaurants)
     .map((key) =>
       restaurants[key].map((restaurant) => ({
@@ -215,11 +215,12 @@ export const getStaticProps = async ({ locale }) => {
         id: restaurant.id,
       }))
     )
-    .flat();
+    .flat()
   return {
     props: {
       shopInfo,
       locale,
+      title: "予約取り消しページ",
     },
-  };
-};
+  }
+}

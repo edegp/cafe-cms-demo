@@ -16,6 +16,7 @@ import Meeting from "public/img/meeting-space.png";
 import { Layout as AntdLayout } from "antd";
 import { Content } from "antd/lib/layout/layout";
 import { Typography } from "antd";
+import { blogs } from "types/cms-types";
 
 const title = "良心とともに素晴らしいコーヒーを";
 const subheading = "コーヒーを楽しみながら持続可能な農業をサポート";
@@ -37,7 +38,7 @@ const blurbs = [
     text: "おいしいコーヒーには人々を結びつける力があると私たちは信じています。 そのため、当店の一角を居心地の良いミーティングスペースに変え、コーヒー愛好家の仲間と交流したり、コーヒー作りのテクニックを学んだりすることにしました。 展示されている作品はすべて売りに出されています。 あなたが支払う全額はアーティストに行きます。",
   },
 ];
-const IndexPage = ({ blogs, result }) => {
+const IndexPage = ({ blogs, result }: {blogs: blogs<"gets">["contents"]; result: any}) => {
   const { Link: AntdLink, Paragraph, Title } = Typography;
   const button =
     "mb-vw-16 justify-self-center border-primary px-8 py-4 text-primary";
@@ -153,13 +154,24 @@ const IndexPage = ({ blogs, result }) => {
 export default IndexPage;
 
 export const getStaticProps = async () => {
-  const data = await client.get({ endpoint: "blogs" });
+  const data: blogs<"gets"> = await client.get({ endpoint: "blogs" });
   const result = await axios
     .get(
       `https://maps.googleapis.com/maps/api/place/details/json?language=ja&place_id=ChIJD3OsNGDxGGAR-ZP3DqsU1DE&key=${process.env.GOOGLE_API_KEY}`
     )
     .then((result) => result.data?.result)
-    .catch((err) => err);
+    .catch((err) => console.error(err));
+  if (result === undefined) {
+    return {
+      props: {
+        blogs: data.contents,
+        result: {
+          rating: 0,
+          reviews: [],
+        },
+      },
+    };
+  }
   return {
     props: {
       blogs: data.contents,

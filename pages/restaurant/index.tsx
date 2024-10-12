@@ -10,88 +10,99 @@ import {
   Button,
   Divider,
   Space,
-} from "antd";
-import { Content, Footer, Header } from "antd/lib/layout/layout";
-import { EnvironmentOutlined, LeftOutlined } from "@ant-design/icons";
-import Image from "next/image";
-import React, { useState } from "react";
-import { weekdayName } from "utils/helpers";
-import { openMapApp } from "utils/helpers";
-import { getAreaShops } from "utils/helpers";
-import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/router";
-import { store, setT, setFlash, RootState, State } from "store";
-import Head from "next/head";
+} from "antd"
+import { Content, Footer, Header } from "antd/lib/layout/layout"
+import { EnvironmentOutlined, LeftOutlined } from "@ant-design/icons"
+import Image from "next/image"
+import React from "react"
+import { weekdayName } from "utils/helpers"
+import { openMapApp } from "utils/helpers"
+import { getAreaShops } from "utils/helpers"
+import { useSelector, useDispatch } from "react-redux"
+import { useRouter } from "next/router"
+import { store, setT, setFlash, State, Restaurant } from "store"
+// import Head from "next/head"
+import { GetServerSideProps } from "next"
+import { Area } from "types/Restaurant"
 
-const { Panel } = Collapse;
+const { Panel } = Collapse
 
-export default function Areas({ areas, restaurants }) {
-  const router = useRouter();
-  const dispatch = useDispatch();
+export default function Areas({
+  areas,
+  restaurants,
+}: {
+  areas: Area[]
+  restaurants: { [key: string]: Restaurant[] }
+}) {
+  const router = useRouter()
+  const dispatch = useDispatch()
   // eslint-disable-next-line react-redux/useSelector-prefer-selectors
-  const t = useSelector((state: State) => state.t);
-  const weekdayNames = (weekdays) => {
-    let names = "";
+  const t = useSelector((state: State) => state.t)
+  const weekdayNames = (weekdays: string[] | string) => {
+    let names = ""
     if (typeof weekdays == "object") {
       for (const weekday of weekdays) {
         if (names.length > 0) {
-          names += ", ";
+          names += ", "
         }
-        names += weekdayName(weekday);
+        names += weekdayName(weekday)
       }
     } else {
-      names = weekdays;
+      names = weekdays
     }
 
-    return names.length == 0 ? "なし" : names;
-  };
-  const mousedownCard = (num) => {
+    return names.length == 0 ? "なし" : names
+  }
+  const mousedownCard = (num: number) => {
     if (num == 2) {
-      event.stopPropagation();
+      event?.stopPropagation()
     }
-  };
-  const openMap = (name, coordinate) => {
-    let latitude = coordinate.latitude;
-    let longitude = coordinate.longitude;
-    openMapApp(latitude, longitude, 18);
-  };
-  const openLineOA = (line) => router.push(line);
-  const reserve = (area, restaurant) => {
-    dispatch(setFlash(area));
-    dispatch(setFlash(restaurant));
-    return router.push(`/restaurant/${area.code}/${restaurant.id}`);
-  };
+  }
+  const openMap = (
+    name: string,
+    coordinate: {
+      latitude: number
+      longitude: number
+    }
+  ) => {
+    let latitude = coordinate.latitude
+    let longitude = coordinate.longitude
+    openMapApp(latitude, longitude, 18)
+  }
+  const openLineOA = (line: string) => router.push(line)
+  const reserve = (area: Area, restaurant: Restaurant) => {
+    dispatch(setFlash(area))
+    dispatch(setFlash(restaurant))
+    return router.push(`/restaurant/${area.code}/${restaurant.id}`)
+  }
   return (
     <>
-      <Head>
-        <title>カルディ予約　店舗選択ページ</title>
-      </Head>
-      <Layout title='カルディ予約　店舗選択ページ' className='bg-white'>
-        <Header className='flex bg-primary text-center'>
+      <Layout title="カルディ予約　店舗選択ページ" className="bg-white">
+        <Header className="flex bg-primary text-center">
           <Typography.Title
             level={2}
-            className='font-[Yu Mincho] mb-0 self-center text-white'
+            className="font-[Yu Mincho] mb-0 self-center text-white"
           >
             予約　店舗選択
           </Typography.Title>
         </Header>
-        <Content className='m-[2.5%] mb-24 bg-white'>
+        <Content className="m-[2.5%] mb-24 bg-white">
           <Row>
-            <Space direction='vertical' size='middle' className='flex w-full'>
+            <Space direction="vertical" size="middle" className="flex w-full">
               {areas.map((area) => (
-                <Collapse key={area.name} className='w-full'>
+                <Collapse key={area.name} className="w-full">
                   <Panel
                     key={area.name}
                     header={
-                      <Typography.Text className='font-semibold'>
+                      <Typography.Text className="font-semibold">
                         {area.name}
                       </Typography.Text>
                     }
                   >
                     <Row
                       gutter={[16, 32]}
-                      justify='space-evenly'
-                      className='mx-[2.5%]'
+                      justify="space-evenly"
+                      className="mx-[2.5%]"
                     >
                       {restaurants[area.code].map((restaurant) => (
                         <Col
@@ -105,39 +116,39 @@ export default function Areas({ areas, restaurants }) {
                             hoverable
                             onClick={() => reserve(area, restaurant)}
                             title={
-                              <Typography.Text className='font-semibold'>
+                              <Typography.Text className="font-semibold">
                                 {restaurant.name}
                               </Typography.Text>
                             }
                           >
-                            <Row gutter={8} align='middle'>
+                            <Row gutter={8} align="middle">
                               <Col xs={24} md={13}>
                                 <Image
                                   src={restaurant.img}
-                                  layout='responsive'
-                                  width='1024'
-                                  height='667'
-                                  objectFit='contain'
-                                  alt='LINE Shop'
+                                  layout="responsive"
+                                  width="1024"
+                                  height="667"
+                                  objectFit="contain"
+                                  alt="LINE Shop"
                                 />
                               </Col>
                               <Col xs={24} md={9} offset={2}>
                                 <List>
                                   <List.Item>
                                     <Typography>
-                                      {t.areas.msg001}: {restaurant.start}～
+                                      {t?.areas.msg001}: {restaurant.start}～
                                       {restaurant.end}
                                     </Typography>
                                   </List.Item>
                                   <List.Item>
                                     <Typography>
-                                      {t.areas.msg002}:
+                                      {t?.areas.msg002}:
                                       {weekdayNames(restaurant.holiday)}
                                     </Typography>
                                   </List.Item>
                                   <List.Item>
                                     <Typography>
-                                      {t.areas.msg003}: ¥
+                                      {t?.areas.msg003}: ¥
                                       {restaurant.budget
                                         ? restaurant.budget.toLocaleString()
                                         : null}
@@ -145,13 +156,13 @@ export default function Areas({ areas, restaurants }) {
                                   </List.Item>
                                   <List.Item>
                                     <Typography>
-                                      {t.areas.msg004}:{restaurant.seats}
-                                      {t.areas.msg005}
+                                      {t?.areas.msg004}:{restaurant.seats}
+                                      {t?.areas.msg005}
                                     </Typography>
                                   </List.Item>
                                   <List.Item>
                                     <Typography>
-                                      {t.areas.msg006}: {restaurant.smoking}
+                                      {t?.areas.msg006}: {restaurant.smoking}
                                     </Typography>
                                   </List.Item>
                                   <List.Item>
@@ -160,9 +171,9 @@ export default function Areas({ areas, restaurants }) {
                                         openLineOA(restaurant.line)
                                       }
                                       onMouseDown={() => mousedownCard(2)}
-                                      className='text-line hover:border-line'
+                                      className="text-line hover:border-line"
                                     >
-                                      {t.areas.msg007}
+                                      {t?.areas.msg007}
                                     </Button>
                                   </List.Item>
                                   <List.Item>
@@ -172,10 +183,10 @@ export default function Areas({ areas, restaurants }) {
                                   </List.Item>
                                 </List>
                               </Col>
-                              <div className='flex items-center'>
+                              <div className="flex items-center">
                                 <EnvironmentOutlined />
                                 <Button
-                                  type='link'
+                                  type="link"
                                   onClick={() =>
                                     openMap(restaurant.name, restaurant.map)
                                   }
@@ -195,10 +206,10 @@ export default function Areas({ areas, restaurants }) {
             </Space>
           </Row>
         </Content>
-        <Footer className='fixed bottom-0 w-full text-center'>
+        <Footer className="fixed bottom-0 w-full text-center">
           <Button
-            href='/'
-            className='inline-flex items-center justify-center hover:top-[-2px] hover:border-primary  hover:text-primary hover:opacity-75 hover:shadow-lg active:border-primary active:text-primary'
+            href="/"
+            className="inline-flex items-center justify-center hover:top-[-2px] hover:border-primary  hover:text-primary hover:opacity-75 hover:shadow-lg active:border-primary active:text-primary"
           >
             <LeftOutlined />
             カルディ非公式ホームページに戻る
@@ -206,18 +217,19 @@ export default function Areas({ areas, restaurants }) {
         </Footer>
       </Layout>
     </>
-  );
+  )
 }
 
-export const getStaticProps = async ({ locale }) => {
-  store.dispatch(setT(locale));
-  const data = await getAreaShops();
-  const areas = data.areas;
-  const restaurants = data.restaurants;
+export const getStaticProps: GetServerSideProps = async ({ locale }) => {
+  store.dispatch(setT(locale))
+  const data = await getAreaShops()
+  const areas = data.areas
+  const restaurants = data.restaurants
   return {
     props: {
       areas,
       restaurants,
+      title: "カルディ予約　店舗選択ページ",
     },
-  };
-};
+  }
+}

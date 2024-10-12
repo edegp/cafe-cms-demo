@@ -2,8 +2,9 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { blogs } from "types/cms-types";
 
-export default function BlogRoll({ blogs }) {
+export default function BlogRoll({ blogs }: { blogs: blogs<"gets">["contents"] }) {
   return (
     <div className='grid grid-cols-1 gap-6  laptop:grid-cols-2'>
       {blogs &&
@@ -45,7 +46,7 @@ export default function BlogRoll({ blogs }) {
               <div className='text-xs'>
                 {blog.content
                   .match(/[^\<\>]+(?=\<[^\<\>]+\>)|[^\<\>]+$/g)
-                  .join(" ")
+                  ?.join(" ")
                   .substr(0, 150) + "…"}
                 <br />
                 <br />

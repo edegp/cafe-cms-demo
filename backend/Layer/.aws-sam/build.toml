@@ -2,10 +2,9 @@
 
 [function_build_definitions]
 
-[layer_build_definitions]
-[layer_build_definitions.93933e18-1449-4024-b54d-e2a3f34c508f]
+[layer_build_definitions.68123b94-1beb-463f-bb64-243a733f0c19]
 layer_name = "UseCaseLayerDev"
-codeuri = "C:\\Users\\ayuhi\\line-api-use-case-reservation-Restaurant\\backend\\Layer\\layer"
+codeuri = "/Users/yuhiaoki/cafe-cms-demo/backend/Layer/layer"
 build_method = "python3.8"
 compatible_runtimes = ["python3.8"]
 architecture = "x86_64"

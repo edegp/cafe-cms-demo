@@ -59,9 +59,9 @@ Mappings:
       RemindDateDifference: -1
       FrontS3BucketName: S3 Bucket Name for Frontend
       LayerVersion: Layer Version
-      LoggerLevel: DEBUG or INFO
+      LoggerLevel: DEBUG
       LambdaMemorySize: 128 to 3008
-      TTL: True or False
+      TTL: True
       # Set day to delete data
       # If you set TTL: True, data will be deleted in the period specified below.
       # Even if you set TTL: False, please set int value.
@@ -72,6 +72,17 @@ Mappings:
       # ### ACCESS LOG SETTING ###
 
 Resources:
+  UseCaseLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      CompatibleRuntimes:
+        - python3.8
+      ContentUri: ../Layer/layer
+      Description: LambdaLayer for Restaurant Use Case
+      LayerName: !FindInMap [EnvironmentMap, !Ref Environment, LayerName]
+    Metadata:
+      BuildMethod: python3.8
+
   ShopMasterTable:
     Type: "AWS::DynamoDB::Table"
     Properties:
@@ -153,12 +164,14 @@ Resources:
       FunctionName: !Sub Restaurant-ShopListGet-${Environment}
       Description: ""
       Timeout: 3
+      # Layers:
+      #   - !Join
+      #     - ":"
+      #     - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
+      #       - !ImportValue RestaurantLayerDev
+      #       - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
       Layers:
-        - !Join
-          - ":"
-          - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
-            - !ImportValue RestaurantLayerDev
-            - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
+        - !Ref UseCaseLayer
       Role: !GetAtt LambdaRole.Arn
       Environment:
         Variables:
@@ -187,12 +200,14 @@ Resources:
       FunctionName: !Sub Restaurant-ShopCalendarGet-${Environment}
       Description: ""
       Timeout: 3
+      # Layers:
+      #   - !Join
+      #     - ":"
+      #     - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
+      #       - !ImportValue RestaurantLayerDev
+      #       - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
       Layers:
-        - !Join
-          - ":"
-          - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
-            - !ImportValue RestaurantLayerDev
-            - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
+        - !Ref UseCaseLayer
       Role: !GetAtt LambdaRole.Arn
       Environment:
         Variables:
@@ -223,12 +238,14 @@ Resources:
       FunctionName: !Sub Restaurant-ReservationTimeGet-${Environment}
       Description: ""
       Timeout: 3
+      # Layers:
+      #   - !Join
+      #     - ":"
+      #     - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
+      #       - !ImportValue RestaurantLayerDev
+      #       - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
       Layers:
-        - !Join
-          - ":"
-          - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
-            - !ImportValue RestaurantLayerDev
-            - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
+        - !Ref UseCaseLayer
       Role: !GetAtt LambdaRole.Arn
       Environment:
         Variables:
@@ -259,12 +276,14 @@ Resources:
       FunctionName: !Sub Restaurant-CourseListGet-${Environment}
       Description: ""
       Timeout: 3
+      # Layers:
+      #   - !Join
+      #     - ":"
+      #     - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
+      #       - !ImportValue RestaurantLayerDev
+      #       - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
       Layers:
-        - !Join
-          - ":"
-          - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
-            - !ImportValue RestaurantLayerDev
-            - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
+        - !Ref UseCaseLayer
       Role: !GetAtt LambdaRole.Arn
       Environment:
         Variables:
@@ -293,12 +312,14 @@ Resources:
       FunctionName: !Sub Restaurant-ReservationPut-${Environment}
       Description: ""
       Timeout: 3
+      # Layers:
+      #   - !Join
+      #     - ":"
+      #     - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
+      #       - !ImportValue RestaurantLayerDev
+      #       - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
       Layers:
-        - !Join
-          - ":"
-          - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
-            - !ImportValue RestaurantLayerDev
-            - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
+        - !Ref UseCaseLayer
       Role: !GetAtt LambdaRole.Arn
       Environment:
         Variables:
@@ -350,12 +371,14 @@ Resources:
       FunctionName: !Sub Restaurant-ReservationDelete-${Environment}
       Description: ""
       Timeout: 3
+      # Layers:
+      #   - !Join
+      #     - ":"
+      #     - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
+      #       - !ImportValue RestaurantLayerDev
+      #       - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
       Layers:
-        - !Join
-          - ":"
-          - - !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer"
-            - !ImportValue RestaurantLayerDev
-            - !FindInMap [EnvironmentMap, !Ref Environment, LayerVersion]
+        - !Ref UseCaseLayer
       Role: !GetAtt LambdaRole.Arn
       Environment:
         Variables:
@@ -618,6 +641,9 @@ Outputs:
   CloudFrontDomainName:
     Description: "CloudFront for Restaurant Demo"
     Value: !GetAtt CloudFrontDistribution.DomainName
+  UseCaseLayerArn:
+    Description: "ARN of the UseCase Layer"
+    Value: !Ref UseCaseLayer
   # ShopReservationTable:
   #   Value: !GetAtt ShopReservationTable.Arn
   # CustomerReservationTable:
