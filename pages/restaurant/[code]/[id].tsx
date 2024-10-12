@@ -1,6 +1,6 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import React, { useState, useCallback, useRef } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
+import React, { useState, useCallback, useRef } from "react"
+import { Swiper, SwiperSlide } from "swiper/react"
 import {
   Button,
   Col,
@@ -14,10 +14,10 @@ import {
   InputNumber,
   Spin,
   Input,
-} from "antd";
-import AntdCalendar from "antd/lib/calendar";
-import { store, setT, setFlash, RootState } from "store";
-import Link from "next/link";
+} from "antd"
+import AntdCalendar, { CalendarProps } from "antd/lib/calendar"
+import { store, setT, setFlash, RootState } from "store"
+import Link from "next/link"
 import {
   getAreaShops,
   getCourses,
@@ -26,136 +26,150 @@ import {
   now,
   timeList,
   isHoliday,
-  createStatusRecord,
   getDailyReservationStatus,
   updateReserve,
-} from "utils/helpers";
-import { Footer } from "antd/lib/layout/layout";
-import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/router";
-import "moment/locale/ja";
-import moment, { Moment } from "moment";
-import locale from "antd//lib/calendar/locale/ja_JP";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+} from "utils/helpers"
+import { Footer } from "antd/lib/layout/layout"
+import { useDispatch, useSelector } from "react-redux"
+import { useRouter } from "next/router"
+import "moment/locale/ja"
+import moment, { Moment } from "moment"
+import locale from "antd//lib/calendar/locale/ja_JP"
+import {
+  Calendar,
+  momentLocalizer,
+  DateFormat,
+  Culture,
+  DateLocalizer,
+} from "react-big-calendar"
 import {
   CheckCircleTwoTone,
   ExclamationCircleTwoTone,
   LoadingOutlined,
-} from "@ant-design/icons";
-import SwiperCore from "swiper";
-import Head from "next/head";
+} from "@ant-design/icons"
+import SwiperCore from "swiper"
+// import Head from "next/head"
+import { ReserveEvent } from "types/Restaurant"
+import { GetServerSideProps, GetStaticPaths } from "next"
 
 export default function Idex(props: {
-  statuses: any;
-  area: any;
-  restaurant: any;
-  minDate: any;
-  maxDate: any;
-  times: any;
-  course: any;
+  statuses: any
+  area: any
+  restaurant: any
+  minDate: any
+  maxDate: any
+  times: any
+  course: any
 }) {
-  const { statuses, area, restaurant, maxDate, minDate, times, course } = props;
-  const router = useRouter();
-  const swiperRef = useRef() as any;
-  const dispatch = useDispatch();
-  const localizer = momentLocalizer(moment);
-  const [form] = Form.useForm();
+  const { statuses, area, restaurant, maxDate, minDate, times, course } = props
+  const router = useRouter()
+  const swiperRef = useRef() as any
+  const dispatch = useDispatch()
+  const localizer = momentLocalizer(moment)
+  const [form] = Form.useForm()
   // eslint-disable-next-line react-redux/useSelector-prefer-selectors
-  const { t, axiosError, lineUser } = useSelector((state: RootState) => state);
-  const [reserveDate, setReserveDate] = useState(null);
-  const [reserveDialog, setReserveDialog] = useState(false);
-  const [events, setEvents] = useState([]);
-  const [month, setMonth] = useState(moment());
-  const [loading, setLoading] = useState(false);
-  const [endtimeDisabled, setEndtimeDisabled] = useState(false);
-  const [errorDialogMessage, setErrorDialogMessage] = useState({
-    title: null,
-    text: null,
-  });
+  const { t, axiosError, lineUser } = useSelector((state: RootState) => state)
+  // const nowDate = now("YYYY-MM-DD")
+  const [reserveDate, setReserveDate] = useState<string>(null)
+  const [reserveDialog, setReserveDialog] = useState(false)
+  const [events, setEvents] = useState<ReserveEvent[]>([])
+  const [month, setMonth] = useState(moment())
+  const [loading, setLoading] = useState(false)
+  const [endtimeDisabled, setEndtimeDisabled] = useState(false)
+  const [errorDialogMessage, setErrorDialogMessage] = useState<{
+    title: string | undefined
+    text: string | undefined
+  }>({
+    title: undefined,
+    text: undefined,
+  })
   //日本語対応
-  moment.locale(router.locale);
-  const newLocale: any = locale;
-  newLocale.lang["shortWeekDays"] = Object.values(t.utils).slice(0, -1);
+  moment.locale(router.locale)
+  const newLocale: any = locale
+  newLocale.lang["shortWeekDays"] = Object.values(t?.utils || {}).slice(0, -1)
   const dayStatus = useCallback(
-    (d) => {
-      let date = d;
-      if (moment.isMoment(d)) date = d.format("YYYY-MM-DD");
-      let ret = 1;
-      if (date in statuses) {
-        ret = statuses[date].status;
-      } else {
-        ret = isHoliday(date, restaurant.holiday) ? 0 : 1;
+    (d: string | Moment) => {
+      let date = d
+      if (moment.isMoment(d)) date = d.format("YYYY-MM-DD")
+      if (typeof date !== "string") {
+        return 0
       }
-      return ret;
+      let ret = 1
+      if (date in statuses) {
+        ret = statuses[date].status
+      } else {
+        ret = isHoliday(date, restaurant.holiday) ? 0 : 1
+      }
+      return ret
     },
     [restaurant, statuses]
-  );
+  )
   const showDayDetail = useCallback(
     async (date: string) => {
-      const status = dayStatus(date);
+      const status = dayStatus(date)
       if (status === 0 || status === 3) {
-        return;
+        return
       } // 「定休日」と「無し」は詳細表示しない
       let events = await getDailyReservationStatus(
         restaurant.id,
         date,
         restaurant
-      );
-      setEvents(events);
+      )
+      setEvents(events)
       if (!axiosError) {
-        form.setFieldsValue({ ...form.getFieldsValue(true), day: date });
+        form.setFieldsValue({ ...form.getFieldsValue(true), day: date })
       }
-      setReserveDate(date);
+      setReserveDate(date)
     },
     [axiosError, dayStatus, form, restaurant]
-  );
+  )
   const changeCourse = useCallback(
     (start: string, courseId: number) => {
-      setEndtimeDisabled(false);
+      setEndtimeDisabled(false)
       if (!start || !courseId) {
-        return;
+        return
       }
       if (courseId > 0) {
-        setEndtimeDisabled(true);
+        setEndtimeDisabled(true)
       }
       // 終了時間算出
       let endTime = moment(reserveDate + " " + start)
         .add(course[courseId].time, "m")
-        .format("HH:mm");
+        .format("HH:mm")
       form.setFieldsValue({
         ...form.getFieldsValue(true),
         end: times.find((v: { value: string }) => v.value === endTime)
           ? endTime
           : null,
-      });
+      })
     },
     [reserveDate, course, form, times]
-  );
+  )
   const reserve = useCallback(
     async (value: {
-      course?: any;
-      people?: any;
-      end?: any;
-      start?: any;
-      day?: any;
+      course?: any
+      people?: any
+      end?: any
+      start?: any
+      day?: any
     }) => {
-      setLoading(true);
-      const { people, end, start, day } = value;
-      const token = lineUser.token;
-      const shopId = restaurant.id;
-      const courseId = value.course;
+      setLoading(true)
+      const { people, end, start, day } = value
+      const token = lineUser?.token
+      const shopId = restaurant.id
+      const courseId = value.course
       // デモ用
-      const setCourse = course.find((v: { id: any }) => v.id === courseId);
+      const setCourse = course.find((v: { id: any }) => v.id === courseId)
       const names = {
-        userName: lineUser.name,
+        userName: lineUser?.name,
         shopName: restaurant.name,
         courseName:
           courseId == 0
-            ? t.calendar.msg014
+            ? t?.calendar.msg014
             : setCourse
             ? setCourse.name
-            : t.calendar.msg014,
-      };
+            : t?.calendar.msg014,
+      }
       try {
         // 予約申込送信
         const data = await updateReserve(
@@ -167,71 +181,75 @@ export default function Idex(props: {
           courseId,
           people,
           names
-        );
+        )
         if (data) {
-          const reservationId = data.reservationId;
+          const reservationId = data.reservationId
           if (isNaN(reservationId)) {
-            setReserveDialog(false);
+            setReserveDialog(false)
           } else {
             setErrorDialogMessage({
               ...errorDialogMessage,
-              title: t.calendar.msg016,
-              text: t.calendar.msg017,
-            });
-            return false;
+              title: t?.calendar.msg016,
+              text: t?.calendar.msg017,
+            })
+            return false
           }
           // ページ遷移
           let courseInfo = {
             id: 0,
-            name: t.calendar.msg014,
+            name: t?.calendar.msg014,
             time: 0,
             price: 0,
             comment: null,
-            text: t.calendar.msg014,
+            text: t?.calendar.msg014,
             value: 0,
-          };
+          }
           if (courseId > 0) {
-            courseInfo = course[courseId];
+            courseInfo = course[courseId]
           }
           const message = {
             no: reservationId,
             restaurant: restaurant,
-            name: lineUser.name,
+            name: lineUser?.name,
             course: courseInfo,
             day: day,
             people: people,
             start: start,
             end: end,
-          };
-          dispatch(setFlash(message));
-          await router.push("/restaurant/completed");
+          }
+          dispatch(setFlash(message))
+          await router.push("/restaurant/completed")
         }
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-      return true;
+      return true
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [course, dispatch, errorDialogMessage]
-  );
-  const handleClese = useCallback(() => setReserveDate(null), []);
+  )
+  const handleClose = useCallback(() => setReserveDate(null), [])
   const calendarChange = useCallback(
     (value: React.SetStateAction<moment.Moment>) => setMonth(value),
     []
-  );
+  )
 
   const handleNavigate = useCallback(
     (newDate: moment.MomentInput) => {
-      const newD = moment(newDate).format("YYYY-MM-DD");
+      const newD = moment(newDate).format("YYYY-MM-DD")
       if (newD < moment().format("YYYY-MM-DD")) {
         setErrorDialogMessage({
           ...errorDialogMessage,
           title: "これ以上進めません",
           text: "×ボタンを押して予約する日にちを再指定してください",
-        });
-        return;
+        })
+        return
       }
-      const swiper = swiperRef?.current?.swiper;
+      const swiper = swiperRef?.current?.swiper
+      showDayDetail(newD)
+      if (reserveDate === null) {
+        return
+      }
       reserveDate < newD
         ? swiper.slideNext()
         : reserveDate > newD
@@ -240,45 +258,52 @@ export default function Idex(props: {
             ...errorDialogMessage,
             title: "これ以上進めません",
             text: "×ボタンを押して予約する日にちを再指定してください",
-          });
-      showDayDetail(newD);
+          })
     },
     [errorDialogMessage, reserveDate, showDayDetail]
-  );
+  )
   const handleSlideNext = useCallback(() => {
-    showDayDetail(moment(reserveDate).add(1, "days").format("YYYY-MM-DD"));
-  }, [reserveDate, showDayDetail]);
+    showDayDetail(moment(reserveDate).add(1, "days").format("YYYY-MM-DD"))
+  }, [reserveDate, showDayDetail])
+
   const handleSlidePrev = useCallback(() => {
-    showDayDetail(moment(reserveDate).subtract(1, "days").format("YYYY-MM-DD"));
-  }, [reserveDate, showDayDetail]);
+    showDayDetail(moment(reserveDate).subtract(1, "days").format("YYYY-MM-DD"))
+  }, [reserveDate, showDayDetail])
+
   const handleSelectEvent = useCallback(
-    (calEvent: { start: moment.MomentInput; end: moment.MomentInput }) => {
-      setReserveDialog(true);
+    (calEvent: {
+      id: number
+      title: string
+      start: moment.MomentInput
+      end: moment.MomentInput
+    }) => {
+      setReserveDialog(true)
       form.setFieldsValue({
         ...form.getFieldsValue(true),
         start: moment(calEvent.start).format("HH:mm"),
         end: moment(calEvent.end).format("HH:mm"),
-      });
+      })
     },
     [form]
-  );
+  )
+
   const handleCancel = useCallback(() => {
-    setReserveDialog(false);
+    setReserveDialog(false)
     form.getFieldsValue({
       ...form.getFieldsValue(true),
       start: null,
       end: null,
       course: 0,
-    });
-  }, [form]);
+    })
+  }, [form])
   const handleFinishFailed = useCallback(
     (errorInfo: any) => console.log("Failed:", errorInfo),
     []
-  );
+  )
   const handleCourseChange = useCallback(
     (value: any) => changeCourse(form.getFieldValue("start"), value),
     [changeCourse, form]
-  );
+  )
   const handleErrorModalClick = useCallback(
     () =>
       setErrorDialogMessage({
@@ -287,38 +312,68 @@ export default function Idex(props: {
         text: "",
       }),
     [errorDialogMessage]
-  );
+  )
 
-  const headerRendar = useCallback(
-    ({ value, onChange }) => {
-      const start = parseInt(minDate.slice(4, -2).replace(/^0/, ""), 10) - 1;
-      const end = parseInt(maxDate.slice(4, -2).replace(/^0/, ""), 10);
-      const monthOptions = [];
-      const current = value.clone();
-      const localeData = value.localeData();
-      const months = [];
-      for (let i = 0; i < 12; i++) {
-        current.month(i);
-        months.push(localeData.monthsShort(current));
+  const headerRender = useCallback(
+    ({ value, onChange }: CalendarProps<Moment>) => {
+      const start = parseInt(minDate.slice(4, -2).replace(/^0/, ""), 10) - 1
+      const end = parseInt(maxDate.slice(4, -2).replace(/^0/, ""), 10)
+      const monthOptions = []
+      if (!value) {
+        return
       }
-      for (let i = start; i < end; i++) {
-        monthOptions.push(
-          // eslint-disable-next-line tailwindcss/no-custom-classname
-          <Select.Option key={i} value={i} className="month-item">
-            {months[i]}
-          </Select.Option>
-        );
+      if (!onChange) {
+        return
       }
-      const year = value.year();
-      const month = value.month();
-      const options = [];
-      for (let i = year; i < year + 1; i += 1) {
+      const minYear = moment(minDate).year()
+      const year = value.year()
+      const maxYear = moment(maxDate).year()
+      const month = value.month()
+      const options = []
+      for (let i = minYear; i <= maxYear; i += 1) {
         options.push(
           // eslint-disable-next-line tailwindcss/no-custom-classname
           <Select.Option key={i} value={i} className="year-item">
             {i}
           </Select.Option>
-        );
+        )
+      }
+      const current = value.clone()
+      const localeData = value.localeData()
+      const months = []
+      for (let i = 0; i < 12; i++) {
+        current.month(i)
+        months.push(localeData.monthsShort(current))
+      }
+      if (start > end) {
+        if (year !== maxYear) {
+          for (let i = start; i < 12; i++) {
+            monthOptions.push(
+              // eslint-disable-next-line tailwindcss/no-custom-classname
+              <Select.Option key={i} value={i} className="month-item">
+                {months[i]}
+              </Select.Option>
+            )
+          }
+        } else {
+          for (let i = end; i < 12; i++) {
+            monthOptions.push(
+              // eslint-disable-next-line tailwindcss/no-custom-classname
+              <Select.Option key={i} value={i} className="month-item">
+                {months[i]}
+              </Select.Option>
+            )
+          }
+        }
+      } else {
+        for (let i = start; i < end; i++) {
+          monthOptions.push(
+            // eslint-disable-next-line tailwindcss/no-custom-classname
+            <Select.Option key={i} value={i} className="month-item">
+              {months[i]}
+            </Select.Option>
+          )
+        }
       }
       return (
         <div key={value.format()} className="py-8">
@@ -355,16 +410,16 @@ export default function Idex(props: {
             </Col>
           </Row>
         </div>
-      );
+      )
     },
     [area, maxDate, minDate, restaurant]
-  );
+  )
 
   const dateFullCellRender = useCallback(
     (value: Moment) => {
-      const valueMonth = value.month() + 1;
-      const curMonth = month.month() + 1;
-      const status = dayStatus(value);
+      const valueMonth = value.month() + 1
+      const curMonth = month.month() + 1
+      const status = dayStatus(value)
       return (
         <>
           <div
@@ -390,7 +445,7 @@ export default function Idex(props: {
             value < moment(maxDate) ? (
               status === 3 ? (
                 <Typography.Link className="mt-3 inline-block text-red-600/80">
-                  {t.calendar.full}
+                  {t?.calendar.full}
                 </Typography.Link>
               ) : status === 2 ? (
                 <>
@@ -412,7 +467,7 @@ export default function Idex(props: {
                 </>
               ) : (
                 <Typography.Link className="mt-3 inline-block text-red-500/80">
-                  {t.calendar.closingday}
+                  {t?.calendar.closingday}
                 </Typography.Link>
               )
             ) : (
@@ -420,31 +475,21 @@ export default function Idex(props: {
             )}
           </div>
         </>
-      );
+      )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [dayStatus, maxDate, minDate, month, showDayDetail]
-  );
+  )
   const calendarClass =
-    "mx-auto h-[85vh] tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop [&_.rbc-toolbar]:flex-nowrap";
-
+    "mx-auto h-[85vh] tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop [&_.rbc-toolbar]:flex-nowrap"
+  console.log(reserveDate)
   return (
     <>
-      <Head>
-        <title>
-          {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
-        </title>
-        <meta
-          property="og:title"
-          content={`${reserveDate} ${restaurant.name}&nbsp;&nbsp;${t.calendar.msg001}`}
-        />
-      </Head>
-
       <Layout className="z-0 mx-auto max-w-screen-laptop bg-white desktop:max-w-[1300px]">
         <Layout.Content>
           <AntdCalendar
             dateFullCellRender={dateFullCellRender}
-            headerRender={headerRendar}
+            headerRender={headerRender}
             locale={newLocale}
             defaultValue={moment()}
             validRange={[moment(minDate), moment(maxDate)]}
@@ -453,14 +498,14 @@ export default function Idex(props: {
           />
           <Drawer
             visible={Boolean(reserveDate)}
-            onClose={handleClese}
+            onClose={handleClose}
             width={"100%"}
             height={"95vh"}
             placement="bottom"
             className="z-30 sp:px-6 [&_.ant-drawer-body]:px-vw-6 [&_.ant-drawer-body]:py-1"
             title={
               <Typography.Text>
-                {reserveDate} {restaurant.name}&nbsp;&nbsp;{t.calendar.msg001}
+                {reserveDate} {restaurant.name}&nbsp;&nbsp;{t?.calendar.msg001}
               </Typography.Text>
             }
           >
@@ -520,12 +565,12 @@ export default function Idex(props: {
                     onSelectEvent={handleSelectEvent}
                     formats={{
                       dayHeaderFormat: (
-                        date: any,
-                        culture: any,
-                        localizer: {
-                          format: (arg0: any, arg1: string, arg2: any) => any;
-                        }
-                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
+                        date: Date,
+                        culture?: Culture,
+                        localizer?: DateLocalizer
+                      ) =>
+                        localizer?.format(date, "M[月] D[日] dddd", culture) ||
+                        "",
                     }}
                   />
                 </div>
@@ -579,12 +624,12 @@ export default function Idex(props: {
                     onSelectEvent={handleSelectEvent}
                     formats={{
                       dayHeaderFormat: (
-                        date: any,
-                        culture: any,
-                        localizer: {
-                          format: (arg0: any, arg1: string, arg2: any) => any;
-                        }
-                      ) => localizer.format(date, "M[月] D[日] dddd", culture),
+                        date: Date,
+                        culture?: Culture,
+                        localizer?: DateLocalizer
+                      ) =>
+                        localizer?.format(date, "M[月] D[日] dddd", culture) ||
+                        "",
                     }}
                   />
                 </div>
@@ -631,18 +676,18 @@ export default function Idex(props: {
                 >
                   <Select
                     onChange={useCallback(
-                      (value) =>
+                      (value: string) =>
                         changeCourse(value, form.getFieldValue("course")),
                       [changeCourse, form]
                     )}
                   >
                     {events.map((event) => {
-                      const startTime = moment(event.start).format("HH:mm");
+                      const startTime = moment(event.start).format("HH:mm")
                       return (
                         <Select.Option key={event.id} value={startTime}>
                           {startTime}
                         </Select.Option>
-                      );
+                      )
                     })}
                   </Select>
                 </Form.Item>
@@ -656,9 +701,9 @@ export default function Idex(props: {
                         if (value < form.getFieldValue("start")) {
                           return Promise.reject(
                             new Error("終了時刻 が 開始時刻 以前になっています")
-                          );
+                          )
                         } else {
-                          return Promise.resolve();
+                          return Promise.resolve()
                         }
                       },
                     },
@@ -666,12 +711,12 @@ export default function Idex(props: {
                 >
                   <Select disabled={endtimeDisabled}>
                     {events.map((event) => {
-                      const endTime = moment(event.end).format("HH:mm");
+                      const endTime = moment(event.end).format("HH:mm")
                       return (
                         <Select.Option key={event.id} value={endTime}>
                           {endTime}
                         </Select.Option>
-                      );
+                      )
                     })}
                   </Select>
                 </Form.Item>
@@ -687,7 +732,7 @@ export default function Idex(props: {
                   <Select onChange={handleCourseChange}>
                     {course.map(
                       (c: {
-                        id: number;
+                        id: number
                         name:
                           | string
                           | number
@@ -697,7 +742,7 @@ export default function Idex(props: {
                               string | React.JSXElementConstructor<any>
                             >
                           | React.ReactFragment
-                          | React.ReactPortal;
+                          | React.ReactPortal
                         price:
                           | string
                           | number
@@ -707,7 +752,7 @@ export default function Idex(props: {
                               string | React.JSXElementConstructor<any>
                             >
                           | React.ReactFragment
-                          | React.ReactPortal;
+                          | React.ReactPortal
                       }) => (
                         <Select.Option key={c.id} value={c.id}>
                           {c.name}（税込 {c.price}円）
@@ -762,55 +807,59 @@ export default function Idex(props: {
             </Link>
           </Button>
           <Button className="border-zinc-600 bg-white text-zinc-600">
-            <Link href="/restaurant/area" passHref>
+            <Link href="/restaurant" passHref>
               店舗選択
             </Link>
           </Button>
         </Footer>
       </Layout>
     </>
-  );
+  )
 }
 
-export const getStaticPaths = async ({ locales }) => {
-  store.dispatch(setT(locales[0]));
-  const data = await getAreaShops();
-  const restaurants = data.restaurants;
+export const getStaticPaths: GetStaticPaths = async ({ locales }) => {
+  store.dispatch(setT(locales?.[0]))
+  const data = await getAreaShops()
+  const restaurants = data.restaurants
   const paths = Object.keys(restaurants)
     .map((key) =>
       restaurants[key].map((restaurant) => ({
         params: { code: key, id: restaurant.id.toString() },
-        locale: locales[0],
+        locale: locales?.[0],
       }))
     )
-    .flat();
+    .flat()
   return {
     paths,
     fallback: true,
-  };
-};
+  }
+}
 
-export const getStaticProps = async ({ params, locale }) => {
-  store.dispatch(setT(locale));
-  const months = monthList(3);
-  const minDate = now("yyyymmdd");
-  const maxDate = now("yyyymmdd", 3);
-  const data = await getAreaShops();
-  const area = data.areas.find((v) => v.code == params.code);
-  const restaurant = data.restaurants[params.code].find(
-    (v: { id: any }) => v.id == params.id
-  );
+export const getStaticProps: GetServerSideProps = async ({
+  params,
+  locale,
+}) => {
+  store.dispatch(setT(locale))
+  const months = monthList(3)
+  const minDate = now("yyyymmdd")
+  const maxDate = now("yyyymmdd", 3)
+  const data = await getAreaShops()
+  const code = params?.code?.[0] as string
+  const area = data.areas.find((v) => v.code == code)
+  const restaurant = data.restaurants[code].find(
+    (v: { id: any }) => v.id == params?.id
+  )
   // 予約時間帯リスト取得
-  const times = timeList(restaurant.start, restaurant.end);
+  const times = timeList(restaurant?.start, restaurant?.end)
   // 予約コースリスト取得
-  const coursePromise = () => getCourses(restaurant.id);
+  const coursePromise = () => getCourses(restaurant?.id)
   // 予約状況データ取得
   const statusesPromise = () =>
-    getMonthlyReservationStatus(restaurant.id, months[0].value, restaurant);
+    getMonthlyReservationStatus(restaurant?.id, months[0].value, restaurant)
   const { course, statuses } = await Promise.all([
     coursePromise(),
     statusesPromise(),
-  ]).then((result) => ({ course: result[0], statuses: result[1] }));
+  ]).then((result) => ({ course: result[0], statuses: result[1] }))
   return {
     props: {
       statuses,
@@ -822,7 +871,9 @@ export const getStaticProps = async ({ params, locale }) => {
       months,
       times,
       course,
+      title: `${restaurant.name} 予約ページ`,
       // maxSeats: restaurant.seats,
     },
-  };
-};
+    revalidate: 3600 * 24,
+  }
+}

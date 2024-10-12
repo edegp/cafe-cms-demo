@@ -2,7 +2,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 
 export default function Document() {
   return (
-    <Html className="touch-manipulation">
+    <Html lang="ja" className="touch-manipulation">
       <Head>
         <link
           rel="apple-touch-icon"
@@ -24,10 +24,8 @@ export default function Document() {
         <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#ff4400" />
         <meta name="theme-color" content="#fff" />
         <meta property="og:type" content="business.business" />
-        <html lang="ja" />
         <meta property="og:url" content="/" />
         <meta property="og:image" content="/og-image.jpg" />
-        
       </Head>
       <body>
         <Main />

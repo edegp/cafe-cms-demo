@@ -7,7 +7,7 @@ const TemplateWrapper = ({ title, description, children }) => {
   return (
     <>
       <Head>
-        <html lang='ja' />
+        {/* <html lang='ja' /> */}
         <title>{title}</title>
         <meta name='description' content={description} />
         <link

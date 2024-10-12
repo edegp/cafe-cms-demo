@@ -3,8 +3,10 @@ import { Col, Row, Typography } from "antd";
 import Image from "next/image";
 import Layout from "../../components/Layout";
 import { client } from "../../libs/client";
+import { GetServerSideProps } from "next";
+import { blogs } from "types/cms-types";
 
-export default function BlogId({ blog }) {
+export default function BlogId({ blog }: { blog: blogs<"patch"> }) {
   return (
     <Layout title={blog.title} description=''>
       <section className='section'>
@@ -40,17 +42,20 @@ export default function BlogId({ blog }) {
 
 // 静的生成のためのパスを指定します
 export const getStaticPaths = async () => {
-  const data = await client.get({ endpoint: "blogs" });
+  const data: blogs<"gets">
+   = await client.get({ endpoint: "blogs" });
 
   const paths = data.contents.map((content) => `/blog/${content.id}`);
   return { paths, fallback: false };
 };
 
 // データをテンプレートに受け渡す部分の処理を記述します
-export const getStaticProps = async (context) => {
-  const id = context.params.id;
-  const data = await client.get({ endpoint: "blogs", contentId: id });
-
+export const getStaticProps: GetServerSideProps  = async (context) => {
+  const id = context?.params?.id;
+  if (typeof id !== "string") {
+    throw Error("id is not string");
+  }
+  const data: blogs<"gets"> = await client.get({ endpoint: "blogs", contentId: id });
   return {
     props: {
       blog: data,

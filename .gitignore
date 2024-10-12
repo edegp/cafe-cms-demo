@@ -33,3 +33,10 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# aws-sam
+.aws-sam
+build.toml
+
+# .env
+.env*

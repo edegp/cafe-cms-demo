@@ -4,8 +4,9 @@ import { client } from "../../libs/client";
 import Layout from "../../components/Layout";
 import BlogRoll from "../../components/BlogRoll";
 import { Typography } from "antd";
+import { blogs } from "types/cms-types";
 
-export default function Home({ blogs }) {
+export default function Home({ blogs }: { blogs: blogs<"gets">["contents"] }) {
   return (
     <Layout title={"ブログ"} description={"ブログ一覧"}>
       <div className="full-width-image-container mt-0 bg-[url('/img/blog-index.jpg')]">
@@ -35,8 +36,7 @@ export default function Home({ blogs }) {
 
 // データをテンプレートに受け渡す部分の処理を記述します
 export const getStaticProps = async () => {
-  const data = await client.get({ endpoint: "blogs" });
-
+  const data: blogs<"gets"> = await client.get({ endpoint: "blogs" });
   return {
     props: {
       blogs: data.contents,

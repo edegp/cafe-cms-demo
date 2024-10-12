@@ -77,9 +77,7 @@ def put_customer_reservation_info(body, shop_info, message_id1, message_id2):
         "message_id1": message_id1,
         "message_id2": message_id2,
     }
-    reservation_id = reservation_info_table_controller.put_item(
-        **customer_reservation_item
-    )
+    reservation_id = reservation_info_table_controller.put_item(**customer_reservation_item)
     return reservation_id
 
 
@@ -147,18 +145,16 @@ def put_shop_reservation_info(body, shop_info):
         # 予約開始時刻をkeyとして予約情報をvalueに持ったデータを作成する。
         start_time_index = {}
         for reserved_time_info in reservation_item["reservedInfo"]:
-            start_time_index[
-                reserved_time_info["reservedStartTime"]
-            ] = reserved_time_info
+            start_time_index[reserved_time_info["reservedStartTime"]] = reserved_time_info
 
         # if->予約がある時間帯：予約人数を足す
         # else->予約が無い時間帯：その時間を新たに追加する
         for new_reservation_info in new_reservation_list:
             reservation_start_time = new_reservation_info["reservedStartTime"]
             if reservation_start_time in start_time_index:
-                start_time_index[reservation_start_time][
+                start_time_index[reservation_start_time]["reservedNumber"] += new_reservation_info[
                     "reservedNumber"
-                ] += new_reservation_info["reservedNumber"]
+                ]
             else:
                 start_time_index[reservation_start_time] = new_reservation_info
 
@@ -181,9 +177,7 @@ def put_shop_reservation_info(body, shop_info):
         new_reservation_item = {
             "shop_id": body["shopId"],
             "reserved_day": body["reservationDate"],
-            "reserved_year_month": utils.format_date(
-                body["reservationDate"], "%Y-%m-%d", "%Y-%m"
-            ),
+            "reserved_year_month": utils.format_date(body["reservationDate"], "%Y-%m-%d", "%Y-%m"),
             "reserved_info": new_reservation_list,
             "total_reserved_number": new_total_reserved_number,
             "vacancy_flg": get_vacancy_flg(reserved_proportion),
@@ -191,9 +185,7 @@ def put_shop_reservation_info(body, shop_info):
         shop_reservation_table_controller.put_item(**new_reservation_item)
 
 
-def divide_thirty_minutes(
-    reservation_start_time, reservation_end_time, reservation_people_number
-):
+def divide_thirty_minutes(reservation_start_time, reservation_end_time, reservation_people_number):
     """
     数時間単位の予約情報を、30分単位の予約情報に分割し、listで返却する。
     データ:予約開始時間,予約終了時間,予約人数
@@ -337,9 +329,7 @@ def put_push_messages_to_dynamo(body, remind_date_difference):
     remind_date_on_day = body["reservationDate"]
 
     # 当日のリマインドメッセージを登録
-    flex_message_on_day = create_flex_message(
-        body, ON_DAY_REMIND_DATE_DIFFERENCE
-    )  # noqa:E501
+    flex_message_on_day = create_flex_message(body, ON_DAY_REMIND_DATE_DIFFERENCE)  # noqa:E501
     logging.info(flex_message_on_day)
     message_id1 = message_table_controller.put_push_message(
         body["userId"], CHANNEL_ID, flex_message_on_day, remind_date_on_day
@@ -347,9 +337,7 @@ def put_push_messages_to_dynamo(body, remind_date_difference):
     logging.info(message_id1)
 
     # 指定日のリマインドメッセージを登録
-    flex_message_day_before = create_flex_message(
-        body, remind_date_difference
-    )  # noqa:E501
+    flex_message_day_before = create_flex_message(body, remind_date_difference)  # noqa:E501
     logging.info(flex_message_day_before)
     remind_date_day_before = utils.calculate_date_str_difference(
         remind_date_on_day, remind_date_difference
@@ -412,9 +400,8 @@ def lambda_handler(event, context):
     # ユーザーID取得
     try:
         user_profile = line.get_profile(body["idToken"], LIFF_CHANNEL_ID)
-        if (
-            "error" in user_profile and "expired" in user_profile["error_description"]
-        ):  # noqa 501
+        print(user_profile)
+        if "error" in user_profile and "expired" in user_profile["error_description"]:  # noqa 501
             return utils.create_error_response("Forbidden", 403)
         else:
             body["userId"] = user_profile["sub"]
@@ -434,13 +421,9 @@ def lambda_handler(event, context):
         shop_info = shop_master_table_controller.get_item(body["shopId"])
         put_shop_reservation_info(body, shop_info)
         # pushメッセージをDynamoに保存
-        message_id1, message_id2 = put_push_messages_to_dynamo(
-            body, REMIND_DATE_DIFFERENCE
-        )
+        message_id1, message_id2 = put_push_messages_to_dynamo(body, REMIND_DATE_DIFFERENCE)
 
-        reservation_id = put_customer_reservation_info(
-            body, shop_info, message_id1, message_id2
-        )
+        reservation_id = put_customer_reservation_info(body, shop_info, message_id1, message_id2)
 
         put_push_messages_to_line(body)
 

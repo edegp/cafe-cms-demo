@@ -1,2 +1,4 @@
 line-bot-sdk==1.17.0
 line-pay
+urllib3==1.26.16
+requests==2.25.1
