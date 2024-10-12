@@ -1,5 +1,11 @@
 /* eslint-disable tailwindcss/no-custom-classname */
-import React, { useState, useCallback, useRef } from "react"
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  ReactFragment,
+  useMemo,
+} from "react"
 import { Swiper, SwiperSlide } from "swiper/react"
 import {
   Button,
@@ -16,7 +22,7 @@ import {
   Input,
 } from "antd"
 import AntdCalendar, { CalendarProps } from "antd/lib/calendar"
-import { store, setT, setFlash, RootState } from "store"
+import { store, setT, setFlash, RootState, Restaurant, Course } from "store"
 import Link from "next/link"
 import {
   getAreaShops,
@@ -28,12 +34,13 @@ import {
   isHoliday,
   getDailyReservationStatus,
   updateReserve,
+  range,
 } from "utils/helpers"
 import { Footer } from "antd/lib/layout/layout"
 import { useDispatch, useSelector } from "react-redux"
 import { useRouter } from "next/router"
 import "moment/locale/ja"
-import moment, { Moment } from "moment"
+import moment, { min, Moment } from "moment"
 import locale from "antd//lib/calendar/locale/ja_JP"
 import {
   Calendar,
@@ -49,17 +56,23 @@ import {
 } from "@ant-design/icons"
 import SwiperCore from "swiper"
 // import Head from "next/head"
-import { ReserveEvent } from "types/Restaurant"
+import { Area, ReserveEvent } from "types/Restaurant"
 import { GetServerSideProps, GetStaticPaths } from "next"
+import { DayTimeSlotCalendar } from "components/DayTimeSlotCalendar"
+import { isPCbrowser } from "libs/mediaQuery"
+import { message } from "antd"
 
 export default function Idex(props: {
-  statuses: any
-  area: any
-  restaurant: any
-  minDate: any
-  maxDate: any
-  times: any
-  course: any
+  statuses: number[]
+  area: Area
+  restaurant: Restaurant
+  minDate: string
+  maxDate: string
+  times: {
+    value: string
+    label: string
+  }[]
+  course: Course[]
 }) {
   const { statuses, area, restaurant, maxDate, minDate, times, course } = props
   const router = useRouter()
@@ -83,6 +96,7 @@ export default function Idex(props: {
     title: undefined,
     text: undefined,
   })
+  // const [monthOptions, setMonthOptions] = useState<React.ReactElement[]>([])
   //日本語対応
   moment.locale(router.locale)
   const newLocale: any = locale
@@ -106,8 +120,12 @@ export default function Idex(props: {
   )
   const showDayDetail = useCallback(
     async (date: string) => {
+      setReserveDate(date)
+      setLoading(true)
       const status = dayStatus(date)
       if (status === 0 || status === 3) {
+        setLoading(false)
+        message.error("定休日です")
         return
       } // 「定休日」と「無し」は詳細表示しない
       let events = await getDailyReservationStatus(
@@ -119,9 +137,9 @@ export default function Idex(props: {
       if (!axiosError) {
         form.setFieldsValue({ ...form.getFieldsValue(true), day: date })
       }
-      setReserveDate(date)
+      setLoading(false)
     },
-    [axiosError, dayStatus, form, restaurant]
+    [axiosError, dayStatus, form, restaurant, setLoading]
   )
   const changeCourse = useCallback(
     (start: string, courseId: number) => {
@@ -250,6 +268,15 @@ export default function Idex(props: {
       if (reserveDate === null) {
         return
       }
+      const status = dayStatus(newD)
+      if (status === 0 || status === 3) {
+        setErrorDialogMessage({
+          ...errorDialogMessage,
+          title: "定休日です",
+          text: "×ボタンを押して予約する日にちを再指定してください",
+        })
+        return
+      }
       reserveDate < newD
         ? swiper.slideNext()
         : reserveDate > newD
@@ -314,66 +341,50 @@ export default function Idex(props: {
     [errorDialogMessage]
   )
 
+  const handleMonthChange = useCallback(
+    (start, end, months) =>
+      range(start, end).map((i) => (
+        // eslint-disable-next-line tailwindcss/no-custom-classname
+        <Select.Option key={i} value={i} className="month-item">
+          {months[i]}
+        </Select.Option>
+      )),
+    []
+  )
+
   const headerRender = useCallback(
     ({ value, onChange }: CalendarProps<Moment>) => {
       const start = parseInt(minDate.slice(4, -2).replace(/^0/, ""), 10) - 1
       const end = parseInt(maxDate.slice(4, -2).replace(/^0/, ""), 10)
-      const monthOptions = []
-      if (!value) {
-        return
-      }
-      if (!onChange) {
+      if (!value || !onChange) {
         return
       }
       const minYear = moment(minDate).year()
-      const year = value.year()
       const maxYear = moment(maxDate).year()
-      const month = value.month()
-      const options = []
-      for (let i = minYear; i <= maxYear; i += 1) {
-        options.push(
-          // eslint-disable-next-line tailwindcss/no-custom-classname
-          <Select.Option key={i} value={i} className="year-item">
-            {i}
-          </Select.Option>
-        )
-      }
+      const year = value.year()
+      let month = value.month()
+      const options = range(minYear, maxYear).map((i) => (
+        // eslint-disable-next-line tailwindcss/no-custom-classname
+        <Select.Option key={i} value={i} className="year-item">
+          {i}
+        </Select.Option>
+      ))
       const current = value.clone()
       const localeData = value.localeData()
-      const months = []
-      for (let i = 0; i < 12; i++) {
-        current.month(i)
-        months.push(localeData.monthsShort(current))
-      }
+      const months = range(0, 12).map((i) =>
+        localeData.monthsShort(current.month(i))
+      )
+      let monthOptions = []
       if (start > end) {
         if (year !== maxYear) {
-          for (let i = start; i < 12; i++) {
-            monthOptions.push(
-              // eslint-disable-next-line tailwindcss/no-custom-classname
-              <Select.Option key={i} value={i} className="month-item">
-                {months[i]}
-              </Select.Option>
-            )
-          }
+          monthOptions = handleMonthChange(start, 11, months)
+          month = start
         } else {
-          for (let i = 1; i < end; i++) {
-            monthOptions.push(
-              // eslint-disable-next-line tailwindcss/no-custom-classname
-              <Select.Option key={i} value={i} className="month-item">
-                {months[i]}
-              </Select.Option>
-            )
-          }
+          monthOptions = handleMonthChange(0, end, months)
+          month = 0
         }
       } else {
-        for (let i = start; i < end; i++) {
-          monthOptions.push(
-            // eslint-disable-next-line tailwindcss/no-custom-classname
-            <Select.Option key={i} value={i} className="month-item">
-              {months[i]}
-            </Select.Option>
-          )
-        }
+        monthOptions = handleMonthChange(start, end, months)
       }
       return (
         <div key={value.format()} className="py-8">
@@ -481,8 +492,82 @@ export default function Idex(props: {
     [dayStatus, maxDate, minDate, month, showDayDetail]
   )
   const calendarClass =
-    "mx-auto h-[85vh] tablet:max-w-screen-tablet  tablet:px-vw-8  laptop:max-w-screen-laptop desktop:max-w-screen-desktop [&_.rbc-toolbar]:flex-nowrap"
-  console.log(reserveDate)
+    "flex mx-auto h-[85vh] tablet:max-w-screen-tablet laptop:max-w-screen-laptop desktop:max-w-screen-desktop [&_.rbc-toolbar]:flex-nowrap gap-8"
+
+  const ReservationPicker = useMemo(() => {
+    return (
+      <SwiperSlide>
+        <div className={calendarClass}>
+          {dayStatus(reserveDate) === 0 ? (
+            <DayTimeSlotCalendar
+              events={events}
+              localizer={localizer}
+              reserveDate={reserveDate}
+              handleNavigate={handleNavigate}
+              minDate={minDate}
+              maxDate={maxDate}
+              handleSelectEvent={handleSelectEvent}
+              start={10}
+              end={23}
+              formats={{
+                dayHeaderFormat: (
+                  date: Date,
+                  culture: Culture,
+                  localizer: DateLocalizer
+                ) => localizer.format(date, "M[月] D[日] dddd", culture),
+              }}
+            />
+          ) : isPCbrowser() ? (
+            <>
+              <DayTimeSlotCalendar
+                events={events}
+                localizer={localizer}
+                reserveDate={reserveDate}
+                handleNavigate={handleNavigate}
+                minDate={minDate}
+                maxDate={maxDate}
+                handleSelectEvent={handleSelectEvent}
+                start={10}
+                end={16}
+              />
+              <DayTimeSlotCalendar
+                events={events}
+                localizer={localizer}
+                reserveDate={reserveDate}
+                handleNavigate={handleNavigate}
+                minDate={minDate}
+                maxDate={maxDate}
+                handleSelectEvent={handleSelectEvent}
+                start={16}
+                end={23}
+              />
+            </>
+          ) : (
+            <DayTimeSlotCalendar
+              events={events}
+              localizer={localizer}
+              reserveDate={reserveDate}
+              handleNavigate={handleNavigate}
+              minDate={minDate}
+              maxDate={maxDate}
+              handleSelectEvent={handleSelectEvent}
+              start={10}
+              end={23}
+            />
+          )}
+        </div>
+      </SwiperSlide>
+    )
+  }, [
+    events,
+    localizer,
+    reserveDate,
+    handleNavigate,
+    minDate,
+    maxDate,
+    handleSelectEvent,
+  ])
+
   return (
     <>
       <Layout className="z-0 mx-auto max-w-screen-laptop bg-white desktop:max-w-[1300px]">
@@ -505,136 +590,31 @@ export default function Idex(props: {
             className="z-30 sp:px-6 [&_.ant-drawer-body]:px-vw-6 [&_.ant-drawer-body]:py-1"
             title={
               <Typography.Text>
-                {reserveDate} {restaurant.name}&nbsp;&nbsp;{t?.calendar.msg001}
+                {reserveDate} {restaurant.name}&nbsp;&nbsp;
+                {t?.calendar.msg001}
               </Typography.Text>
             }
           >
-            <Swiper
-              onInit={(core: SwiperCore) => (swiperRef.current = core.el)}
-              loop={true}
-              slidesPerView={1}
-              onSlideNextTransitionStart={handleSlideNext}
-              onSlidePrevTransitionStart={handleSlidePrev}
+            <Spin
+              spinning={loading}
+              className="z-50 text-primary"
+              indicator={
+                <LoadingOutlined className="font-[36px] text-primary" spin />
+              }
+              size="large"
+              tip="読み込み中"
             >
-              <SwiperSlide>
-                <div className={calendarClass}>
-                  <Calendar
-                    events={events.map((event, index) => ({
-                      id: index,
-                      title: event.name,
-                      start: new Date(new Date(event.start.replace(" ", "T"))),
-                      end: new Date(new Date(event.end.replace(" ", "T"))),
-                    }))}
-                    step={30}
-                    views={["day"]}
-                    defaultView="day"
-                    localizer={localizer}
-                    timeslots={2}
-                    date={new Date(reserveDate)}
-                    onNavigate={handleNavigate}
-                    messages={{
-                      previous: "前の日",
-                      next: "次の日",
-                      today: "今日",
-                    }}
-                    min={
-                      new Date(
-                        parseInt(minDate.slice(0, 4), 10),
-                        parseInt(minDate.slice(4, 6), 10),
-                        parseInt(minDate.slice(6, 8), 10),
-                        10,
-                        0,
-                        0
-                      )
-                    }
-                    max={
-                      new Date(
-                        parseInt(maxDate.slice(0, 4), 10),
-                        parseInt(maxDate.slice(4, 6), 10),
-                        parseInt(maxDate.slice(6, 8), 10),
-                        23,
-                        0,
-                        0
-                      )
-                    }
-                    eventPropGetter={(event) => ({
-                      className:
-                        "odd:bg-slate-500/70 even:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
-                      key: event.id,
-                    })}
-                    onSelectEvent={handleSelectEvent}
-                    formats={{
-                      dayHeaderFormat: (
-                        date: Date,
-                        culture?: Culture,
-                        localizer?: DateLocalizer
-                      ) =>
-                        localizer?.format(date, "M[月] D[日] dddd", culture) ||
-                        "",
-                    }}
-                  />
-                </div>
-              </SwiperSlide>
-              <SwiperSlide>
-                <div className={calendarClass}>
-                  <Calendar
-                    events={events.map((event, index) => ({
-                      id: index,
-                      title: event.name,
-                      start: new Date(new Date(event.start.replace(" ", "T"))),
-                      end: new Date(new Date(event.end.replace(" ", "T"))),
-                    }))}
-                    step={30}
-                    views={["day"]}
-                    defaultView="day"
-                    localizer={localizer}
-                    timeslots={2}
-                    date={new Date(reserveDate)}
-                    onNavigate={handleNavigate}
-                    messages={{
-                      previous: "前の日",
-                      next: "次の日",
-                      today: "今日",
-                    }}
-                    min={
-                      new Date(
-                        parseInt(minDate.slice(0, 4), 10),
-                        parseInt(minDate.slice(4, 6), 10),
-                        parseInt(minDate.slice(6, 8), 10),
-                        10,
-                        0,
-                        0
-                      )
-                    }
-                    max={
-                      new Date(
-                        parseInt(maxDate.slice(0, 4), 10),
-                        parseInt(maxDate.slice(4, 6), 10),
-                        parseInt(maxDate.slice(6, 8), 10),
-                        23,
-                        0,
-                        0
-                      )
-                    }
-                    eventPropGetter={(event) => ({
-                      className:
-                        "even:bg-slate-500/70 odd:bg-primary/80 border-white pl-vw-36 align-items-center space-between",
-                      key: event.id,
-                    })}
-                    onSelectEvent={handleSelectEvent}
-                    formats={{
-                      dayHeaderFormat: (
-                        date: Date,
-                        culture?: Culture,
-                        localizer?: DateLocalizer
-                      ) =>
-                        localizer?.format(date, "M[月] D[日] dddd", culture) ||
-                        "",
-                    }}
-                  />
-                </div>
-              </SwiperSlide>
-            </Swiper>
+              <Swiper
+                onInit={(core: SwiperCore) => (swiperRef.current = core.el)}
+                loop={true}
+                slidesPerView={1}
+                onSlideNextTransitionStart={handleSlideNext}
+                onSlidePrevTransitionStart={handleSlidePrev}
+              >
+                {ReservationPicker}
+                {ReservationPicker}
+              </Swiper>
+            </Spin>
           </Drawer>
           <Modal
             zIndex={30}
@@ -730,35 +710,11 @@ export default function Idex(props: {
                 </Form.Item>
                 <Form.Item name="course" label="コース">
                   <Select onChange={handleCourseChange}>
-                    {course.map(
-                      (c: {
-                        id: number
-                        name:
-                          | string
-                          | number
-                          | boolean
-                          | React.ReactElement<
-                              any,
-                              string | React.JSXElementConstructor<any>
-                            >
-                          | React.ReactFragment
-                          | React.ReactPortal
-                        price:
-                          | string
-                          | number
-                          | boolean
-                          | React.ReactElement<
-                              any,
-                              string | React.JSXElementConstructor<any>
-                            >
-                          | React.ReactFragment
-                          | React.ReactPortal
-                      }) => (
-                        <Select.Option key={c.id} value={c.id}>
-                          {c.name}（税込 {c.price}円）
-                        </Select.Option>
-                      )
-                    )}
+                    {course.map((c) => (
+                      <Select.Option key={c.id} value={c.id}>
+                        {c.name}（税込 {c.price}円）
+                      </Select.Option>
+                    ))}
                   </Select>
                 </Form.Item>
                 <Form.Item
@@ -851,15 +807,12 @@ export const getStaticProps: GetServerSideProps = async ({
   )
   // 予約時間帯リスト取得
   const times = timeList(restaurant?.start, restaurant?.end)
-  // 予約コースリスト取得
-  const coursePromise = () => getCourses(restaurant?.id)
-  // 予約状況データ取得
-  const statusesPromise = () =>
-    getMonthlyReservationStatus(restaurant?.id, months[0].value, restaurant)
-  const { course, statuses } = await Promise.all([
-    coursePromise(),
-    statusesPromise(),
-  ]).then((result) => ({ course: result[0], statuses: result[1] }))
+  const course = await getCourses(restaurant?.id)
+  const statuses = await getMonthlyReservationStatus(
+    restaurant?.id,
+    months[0].value,
+    restaurant
+  )
   return {
     props: {
       statuses,

@@ -1,11 +1,13 @@
-import { store, setLineUser, setAxiosError, Restaurant } from "store"
+import { store, setLineUser, setAxiosError, Restaurant, Course } from "store"
 import { isIOS, isAndroid } from "react-device-detect"
 import { RestaurantClient } from "utils/reserve_client"
-import { Area, ReserveEvent } from "types/Restaurant"
+import { Area, Reservation, ReserveEvent } from "types/Restaurant"
 
 export const _module = process.env.NEXT_PUBLIC_AJAX_MODULE
   ? process.env.NEXT_PUBLIC_AJAX_MODULE
   : "axios"
+
+export const range = (start, end) => [...Array(end + 1).keys()].slice(start)
 
 export const weekdayName = (weekday) => {
   let name = ""
@@ -248,7 +250,12 @@ const httpStatus = {
   505: { message: "HTTP Version Not Supported" },
 }
 
-export const monthList = (count) => {
+export const monthList = (
+  count
+): {
+  text: string
+  value: string
+}[] => {
   let months = []
   let yyyymmdd = now("yyyymmdd")
   let yyyy = yyyymmdd.slice(0, 4)
@@ -362,7 +369,13 @@ const _dateformat = (date, format) => {
   return ret
 }
 
-export const timeList = (fromTime, toTime) => {
+export const timeList = (
+  fromTime: string,
+  toTime: string
+): {
+  text: string
+  value: string
+}[] => {
   let ret = []
 
   let ftime = parseInt(fromTime.split(":")[0], 10)
@@ -382,7 +395,7 @@ export const timeList = (fromTime, toTime) => {
   return ret
 }
 
-export const getCourses = async (shopId) => {
+export const getCourses = async (shopId): Promise<Course[]> => {
   let ret = []
 
   // コースレコード
@@ -454,11 +467,17 @@ export function isHoliday(yyyymmdd, holiday) {
 }
 
 export const getMonthlyReservationStatus = async (
-  shopId,
-  month,
-  restaurant
-) => {
-  let ret = {}
+  shopId: number,
+  month: string,
+  restaurant: Restaurant
+): Promise<Reservation> => {
+  let ret: Reservation = {
+    status: null,
+    name: null,
+    start: null,
+    end: null,
+    events: [],
+  }
 
   // 月別予約状況データ取得
   const data = await RestaurantClient[_module].shopStatusCalendar(shopId, month)
@@ -505,9 +524,8 @@ export const getDailyReservationStatus = async (shopId, day, restaurant) => {
   for (const record of data) {
     if (!("status" in record)) {
       record["status"] = 0 // 空き有
-      const reservedNumber = record.reservedNumber
       const reservedLimit = restaurant.seats
-      const percentage = reservedNumber / reservedLimit
+      const percentage = record.reservedNumber / reservedLimit
       if (percentage >= 1.0) {
         record["status"] = 2 // 空き無
       } else if (percentage >= 0.8) {
@@ -527,22 +545,15 @@ export const getDailyReservationStatus = async (shopId, day, restaurant) => {
         color = "error"
         break
     }
-    // 予約
-    let event = {
-      shopId: null,
-      name: null,
-      start: null,
-      end: null,
-      color: null,
-      reserved: null,
-    }
-    event.shopId = restaurant.id
-    event.name = name
-    event.start = `${day} ${record.reservedStartTime}`
-    event.end = `${day} ${record.reservedEndTime}`
-    event.color = color
-    event.reserved = record.reservedNumber
-    events.push(event)
+
+    events.push({
+      shopId: restaurant.id,
+      name: name,
+      start: `${day} ${record.reservedStartTime}`,
+      end: `${day} ${record.reservedEndTime}`,
+      color: color,
+      reserved: record.reservedNumber,
+    })
   }
 
   // 1日分時間帯イベント取得

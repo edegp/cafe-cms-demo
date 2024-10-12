@@ -20,6 +20,8 @@ import { LoadingOutlined } from "@ant-design/icons"
 import { Spin } from "antd"
 import ErrorBoundary from "antd/lib/alert/ErrorBoundary"
 import Head from "next/head"
+import { useWindowSize } from "libs/useWindowSize"
+import { Initialize } from "libs/initialize"
 
 const liffId =
   process.env.NODE_ENV === "production"
@@ -28,60 +30,11 @@ const liffId =
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter()
-  const { message, isLoading } = store.getState()
-  const Initialize = async () => {
-    store.dispatch(setIsLoading(true))
-    if (!message?.LIFF_INITED) {
-      store.dispatch(
-        setStarted(
-          new Date().toLocaleString("ja-JP", {
-            timeZone: "Asia/Tokyo",
-          })
-        )
-      )
-      // 言語
-      if ("lang" in router.query) {
-        store.dispatch(setLocale(router.query.lang))
-      }
-      await store.dispatch(setT(router.locale))
-      Promise.all([import("@line/liff"), import("@line/liff-mock")]).then(
-        (result) => {
-          const liff = result[0].default
-          const LiffMockPlugin = result[1].default
-          // LIFF Initialize
-          const mock = Boolean(process.env.NODE_ENV !== "production")
-          if (mock) {
-            liff.use(new LiffMockPlugin())
-          }
-          liff
-            .init({
-              liffId,
-              mock,
-            })
-            .then(() => {
-              if (!liff.isLoggedIn()) {
-                liff.login({
-                  redirectUri:
-                    router.pathname == "/restaurant/delete"
-                      ? `${window.location.origin}/restaurant/delete`
-                      : `${window.location.origin}/restaurant`,
-                })
-                liff.getProfile().then((profile) => {
-                  console.log(profile)
-                })
-              }
-              store.dispatch(setFlash({ LIFF_INITED: true }))
-            })
-            .catch((err) => {
-              console.log(err)
-            })
-        }
-      )
-    }
-    store.dispatch(setIsLoading(false))
-  }
+  const { message } = store.getState()
+  useWindowSize()
+
   useEffect(() => {
-    if (router.pathname.startsWith("/restaurant")) Initialize()
+    if (router.pathname.startsWith("/restaurant")) Initialize(router)
   }, [message])
 
   useEffect(() => {

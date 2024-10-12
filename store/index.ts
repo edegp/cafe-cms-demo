@@ -83,6 +83,7 @@ export type State = {
   axiosError?: Object
   t?: T
   isLoading?: boolean
+  clientSize?: [number, number]
 }
 
 const createNoopStorage = () => {
@@ -123,6 +124,7 @@ const initialState: State = {
   axiosError: null,
   t: null,
   isLoading: false,
+  clientSize: [0, 0],
 }
 
 const restaurantSlice = createSlice({
@@ -186,6 +188,9 @@ const restaurantSlice = createSlice({
     setIsLoading: (state, action) => {
       return { ...state, isLoading: action.payload }
     },
+    setWindowSize: (state, action) => {
+      return { ...state, clientSize: action.payload }
+    },
   },
 })
 
@@ -203,6 +208,7 @@ export const {
   clearFlash,
   setT,
   setIsLoading,
+  setWindowSize,
 } = restaurantSlice.actions
 export default persistedReducer
 
